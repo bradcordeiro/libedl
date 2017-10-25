@@ -1,0 +1,66 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/edl.h
+event.h
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/event.h
+fstream
+-
+iostream
+-
+string
+-
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/event.h
+cstdint
+-
+string
+-
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/timecode.h
+cstdint
+-
+string
+-
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/main.cpp
+include/event.h
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/event.h
+include/edl.h
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/edl.h
+iostream
+-
+fstream
+-
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/src/edl.cpp
+../include/edl.h
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/edl.h
+fstream
+-
+sstream
+-
+string
+-
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/src/event.cpp
+../include/event.h
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/event.h
+iostream
+-
+sstream
+-
+string
+-
+
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/src/timecode.cpp
+../include/timecode.h
+/Users/bradcordeiro/Documents/Programming/CLion Projects/edlthing/include/timecode.h
+string
+-
+
