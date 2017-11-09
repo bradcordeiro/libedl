@@ -1,0 +1,3 @@
+test/gtest-all.o
+test/gtest.h
+test/*.edl
