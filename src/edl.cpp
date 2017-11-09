@@ -4,14 +4,14 @@
 #include <sstream>
 #include <string>
 
-Edl::Edl() : _eventsSize(0) {}
+Edl::Edl() : _iterator(0) {}
 
 Edl::Edl(std::ifstream &inputFile) {
   std::string line;
   Event *e;
   bool toWrite = false;
 
-  _eventsSize = 0;
+  _iterator = 0;
 
   getline(inputFile, line);
   setNameFromHeader(line);
@@ -39,7 +39,7 @@ Edl::Edl(std::ifstream &inputFile) {
     }
 
     if (toWrite) {
-      _events[_eventsSize++] = e;
+      _events[_iterator++] = e;
       toWrite = false;
       e->printCsv();
     }
