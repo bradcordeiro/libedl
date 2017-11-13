@@ -2,15 +2,15 @@
 
 ## Introduction
 
-libedl is a C++ library to read and extract data from [Edit Decision Lists](https://en.wikipedia.org/wiki/Edit_decision_list), commonly referred to as EDLs. EDLs are plaintext documents describing an edited sequence in a list. The most common format is CMX 3600, which is currently the only supported format.
+libedl is a C++ library to read and write [Edit Decision Lists](https://en.wikipedia.org/wiki/Edit_decision_list), commonly referred to as EDLs. EDLs are plaintext documents describing an edited sequence in a list. The most common format is CMX 3600, which is currently the only supported format.
 
 libedl provides three C++ classes to represent data present in an EDL:
 
-* EDL: represents an EDL document (an editeed sequence)
-* Event: represents a single clip in an edited sequence
-* Timecode: represents [SMPTE timecode](https://en.wikipedia.org/wiki/SMPTE_timecode) information
+* **EDL**: represents an EDL document (an editeed sequence)
+* **Event**: represents a single clip in an edited sequence
+* **Timecode**: represents [SMPTE timecode](https://en.wikipedia.org/wiki/SMPTE_timecode) information
 
-The Timecode class supports NTSC drop-frame, and each class will pass this information to any classes they contain as members.
+The Timecode class supports NTSC drop-frame, and each class will pass this information to any classes they contain as members on initialization of the member.
 
 ## Origin
 
@@ -83,6 +83,10 @@ Each constructor provides a default framerate and dropframe boolean. These are 3
 * **std::string sourceClipName()** : Returns the event source name (T_QEVL1HEIS1040.NEW.01.COPY.01 in the block above)
 * **std::string sourceFileName()** : Returns the event's source file name (no example above)
 * **std::string comment()** : Returns any comments that belong to the event (POND5_T_QEVL1HEIS1040_HEISTS_DINNER SET GANG_CLOSEUP OF FULL TREASURE CHEST WITH JEWELLERY\_59691306 in the block above)
+* **Timecode sourceStart()** : Returns Timecode object of the event's source's start timecode ("00:08:00:19" above)
+* **Timecode SourceEnd()** : Returns Timecode object of the event's source's end timecode ("00:08:02:16" above)
+* **Timecode recordStart()** : Returns Timecode object of the event's record start timecode ("01:21:11:21" above)
+* **Timecode recordEnd()** : Returns Timecode object of the event's record end timecode ("01:21:13:18" above)
 
 #### Event Setters
 
