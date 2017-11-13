@@ -40,6 +40,10 @@ public:
   inline std::string sourceClipName() const { return _sourceClipName; }
   inline std::string sourceFileName() const { return _sourceFileName; }
   inline std::string comment() const { return _comment; }
+  inline Timecode sourceStart() const { return _sourceStart; }
+  inline Timecode sourceEnd() const { return _sourceEnd; }
+  inline Timecode recordStart() const { return _recordStart; }
+  inline Timecode recordEnd() const { return _recordEnd; }
   // setters
   void dropFrame(const bool &b) { _df = b; }
   void eventNumber(const uint_fast16_t &i) { _eventNumber = i; };
