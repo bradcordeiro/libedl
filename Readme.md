@@ -26,6 +26,36 @@ Definitions for each class are provided in the three header files in the *includ
 
 Small one-line class member functions, such as getters and simple setters, are implemented inline in the header files.
 
+### Example
+
+```c++
+#include "include/edl.h"
+#include <fstream>
+#include <iostream>
+
+int main() {
+  std::ifstream inputFile;
+  Edl e;
+
+  inputFile.open("test/cmx3600.edl");
+
+  if (inputFile.good()) {
+    e = Edl(inputFile);
+    for (int i = 0; i < e.size(); i++) {
+    	std::cout << "Event " << e[i].eventNumber()
+		  << " starts at "
+		  << e[i].recordStart()
+		  << "." << std::endl;
+    }
+  } else {
+    std::cout << "Failed to open input file." << std::endl;
+    return 1;
+  }
+
+  return 0;
+}
+```
+
 ## Classes
 
 ### Edl
