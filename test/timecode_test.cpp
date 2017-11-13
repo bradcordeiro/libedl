@@ -1,8 +1,6 @@
 #include "gtest.h"
 #include "../include/timecode.h"
 
-
-// Gets correct components from 00;00;00;00
 TEST(Timecode, Constructor_Default) {
   Timecode t;
   Timecode s(0, 0, 0, 0, 30, false);
@@ -20,7 +18,7 @@ TEST(Timecode, Constructor_String) {
   ASSERT_EQ(8, u.minutes());
   ASSERT_EQ(41, u.seconds());
   ASSERT_EQ(4, u.frames());
-  Timecode v("15:08:41;04", 29.97, false);
+  Timecode v("15.08.41.04", 29.97, false);
   ASSERT_EQ(15, v.hours());
   ASSERT_EQ(8, v.minutes());
   ASSERT_EQ(41, v.seconds());
@@ -93,6 +91,13 @@ TEST(Timecode, CanAdd_TwoTimecodes) {
   ASSERT_EQ(v.totalFrames(), x.totalFrames());
 }
 
+TEST(Timecode, CanAdd_IntAndTimecode) {
+  Timecode t("01:00:00:00", 29.97, true);
+  Timecode u("01:00:00:15", 29.97, true);
+  Timecode v = t + 15;
+  ASSERT_EQ(v.totalFrames(), u.totalFrames());
+}
+
 TEST(Timecode, InvalidTimecodeThrows) {
   ASSERT_THROW(Timecode(5184000, 59.94, false), std::invalid_argument);
   ASSERT_THROW(Timecode("25:00:00:00"), std::invalid_argument);
@@ -101,14 +106,8 @@ TEST(Timecode, InvalidTimecodeThrows) {
   ASSERT_THROW(Timecode("01:00:00:31"), std::invalid_argument);
   ASSERT_THROW(Timecode("01:05:00:00", 29.97, true), std::invalid_argument);
 }
-/*
-TEST(Timecode, CanAdd_IntAndTimecode) {
-  Timecode t("01:00:00:00", 29.97, true);
-  Timecode u("01:00:00:15", 29.97, false);
-  t = t + 15;
-  ASSERT_EQ(t.totalFrames(), u.totalFrames());
-}
-*/
+
+
 
 namespace {
 
