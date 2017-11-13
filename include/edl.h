@@ -6,38 +6,37 @@
 #include <iostream>
 #include <string>
 
+extern void _setEventClipData(const std::string &s);
+
 class Edl {
 
 private:
   std::string _name;
-  float _frameRate;
+  double _frameRate;
   bool _dropFrame;
   Event *_events[999];
-  int _iterator;
+  int _size;
   void setNameFromHeader(std::string);
+  void setDropFrame(const std::string &);
+  void setFrameRate(const std::string &);
 
 public:
   // constructors
-  Edl();                // default constructor
-  Edl(std::ifstream &); // create from input file
-  Edl(std::string);     // create from path to file
+  Edl();
+  explicit Edl(std::ifstream &);
+  explicit Edl(std::string);
+  Edl(Edl &);
   // getters
-  std::string name() const { return _name; }
-  double frameRate() const { return _frameRate; }
-  Event event(int i) const { return *(_events[i]); }
+  inline std::string name() const { return _name; }
+  inline int size() const { return _size; }
+  Event event(const int &i) const;
   // setters
-  void setName(const std::string &);
-  void setFrameRate(const std::string &);
-  void setFrameRate(const float &);
-  void setFrameRate(const int &);
-  void setDropFrame(const bool &);
-  void setDropFrame(const std::string &);
+  void setName(const std::string &input) { _name = input; }
+  void setFrameRate(const double &);
+  inline void setDropFrame(const bool &b) { _dropFrame = b; }
   // operator overloads
-  Edl operator=(const Edl &);
-  Edl operator++();
-  Edl operator++(int);
-  Edl operator--();
-  Edl operator--(int);
+  Edl &operator=(const Edl &); // shallow copy
+  Event operator[](const int &) const;
 };
 
 #endif // EDH_H_

@@ -1,17 +1,27 @@
 #include "../include/edl.h"
 #include "../include/event.h"
+#include <stdexcept>
 #include <fstream>
-#include <sstream>
 #include <string>
 
-Edl::Edl() : _iterator(0) {}
+Edl::Edl() : _size(0) {}
 
-Edl::Edl(std::ifstream &inputFile) {
+Edl::Edl(Edl &e) {
+  _name = e._name;
+  _frameRate = e._frameRate;
+  _dropFrame = e._dropFrame;
+  _size = e._size;
+  for (int i = 0; i < _size; i++) {
+    _events[i] = new Event;
+    *(_events[i]) = *(e._events[i]);
+  }
+}
+
+Edl::Edl(std::ifstream &inputFile)
+    : _frameRate(30), _dropFrame(false), _size(0) {
   std::string line;
   Event *e;
   bool toWrite = false;
-
-  _iterator = 0;
 
   getline(inputFile, line);
   setNameFromHeader(line);
@@ -24,24 +34,24 @@ Edl::Edl(std::ifstream &inputFile) {
     if (isdigit(line.front())) {
       e = new Event(line, _frameRate, _dropFrame);
       toWrite = true;
-      getline(inputFile, line);
     }
     if (line.front() == 'M') {
-      getline(inputFile, line); // Motion effect, discard
+      // TODO: Handle motion effect
     }
     if (line.front() == 'F') {
       setDropFrame(line);
-      getline(inputFile, line);
     }
-    while (line.front() == '*' && !inputFile.eof()) {
-      e->setEventClipData(line);
+    getline(inputFile, line);
+
+    while (line.front() == '*' && !inputFile.fail()) {
+      e->_setEventClipData(line);
       getline(inputFile, line);
     }
 
     if (toWrite) {
-      _events[_iterator++] = e;
+      _events[_size++] = e;
+      std::cout << *e;
       toWrite = false;
-      e->printCsv();
     }
   }
 }
@@ -51,15 +61,13 @@ Edl::Edl(std::string) {}
 
 void Edl::setNameFromHeader(std::string input) { setName(input.substr(9)); }
 
-void Edl::setName(const std::string &input) { _name = input; }
-
 // TODO: error handling
 void Edl::setFrameRate(const std::string &input) {
   setFrameRate(std::stof(input));
 }
 
-void Edl::setFrameRate(const float &input) {
-  int fps = input;
+void Edl::setFrameRate(const double &input) {
+  uint_fast16_t fps = static_cast<uint_fast16_t>(input);
 
   switch (fps) {
   case 29:
@@ -76,45 +84,31 @@ void Edl::setFrameRate(const float &input) {
   }
 }
 
-void Edl::setFrameRate(const int &input) { _frameRate = input; }
-
-void Edl::setDropFrame(const bool &b) { _dropFrame = b; }
-
-void Edl::setDropFrame(const std::string& input) {
+void Edl::setDropFrame(const std::string &input) {
   _dropFrame = (input != "FCM: NON-DROP FRAME");
 }
 
-Edl Edl::operator=(const Edl &rhs) {
+Event Edl::event(const int &i) const {
+    if (i >= _size) {
+      throw std::out_of_range("");
+    } else {
+      return *(_events[i]);
+    }
+}
+
+Edl& Edl::operator=(const Edl &rhs) {
   if (this != &rhs) {
     _name = rhs._name;
     _frameRate = rhs._frameRate;
     _dropFrame = rhs._dropFrame;
-    _iterator = rhs._iterator;
-    for (int i = 0; i < _iterator; i++) {
-      *(_events[i]) = *(rhs._events[i]);
+    _size = rhs._size;
+    for (int i = 0; i < _size; i++) {
+        _events[i] = rhs._events[i];
     }
   }
   return *this;
 }
 
-Edl Edl::operator++() {
-  _iterator++;
-  return *this;
-}
-
-Edl Edl::operator++(int) {
-  Edl temp(*this);
-  operator++();
-  return temp;
-}
-
-Edl Edl::operator--(){
-  _iterator--;
-  return *this;
-}
-
-Edl Edl::operator--(int){
-  Edl temp(*this);
-  operator--();
-  return temp;
+Event Edl::operator[](const int&i) const {
+  return event(i);
 }

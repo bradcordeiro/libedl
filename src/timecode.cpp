@@ -6,45 +6,42 @@
 
 // Constructors
 
-Timecode::Timecode(int h, int m, int s, int f, float fr, bool b)
-    : _hours(h), _minutes(m), _seconds(s), _frames(f), _frameRate(fr),
-      _dropFrame(b) {
-  setSeparator();
-  validate();
+Timecode::Timecode(uint_fast16_t h, uint_fast16_t m, uint_fast16_t s,
+                   uint_fast16_t fr, double f, bool b)
+    : _hours(h), _minutes(m), _seconds(s), _frames(fr), _frameRate(f),
+      _dropFrame(b), _separator(_setSeparator()) {
+  _validate();
 }
 
-Timecode::Timecode(const std::string &s, float fr, bool b)
-    : _frameRate(fr), _dropFrame(b) {
-  setSeparator();
-  setTimecode(s);
-  validate();
+Timecode::Timecode(uint_fast32_t frameInput, double frameRate, bool b)
+    : _frameRate(frameRate), _dropFrame(b), _separator(_setSeparator()) {
+  _setTimecode(frameInput);
 }
 
-Timecode::Timecode(const char *s, float frameRate, bool b)
-    : _frameRate(frameRate), _dropFrame(b) {
-  setTimecode(s);
-  setSeparator();
-  validate();
+Timecode::Timecode(const char *s, double f, bool b)
+    : _frameRate(f), _dropFrame(b), _separator(_setSeparator()) {
+  _setTimecode(s);
+  _validate();
 }
 
-Timecode::Timecode(int frameInput, float frameRate, bool b)
-    : _frameRate(frameRate), _dropFrame(b) {
-  setSeparator();
-  setTimecode(frameInput);
+Timecode::Timecode(const std::string s, double f, bool b)
+    : _frameRate(f), _dropFrame(b), _separator(_setSeparator()) {
+  _setTimecode(s.c_str());
 }
 
 // Private member functions
-void Timecode::setTimecode(int frameInput) {
-  uint_fast16_t nominal_fps = _frameRate;
-  uint_fast16_t framesPerMin;
-  uint_fast16_t framesPer10Min;
-  uint_fast32_t framesPerHour;
+char Timecode::_setSeparator() {
+  _separator = (_dropFrame ? ';' : ':');
+  return _separator;
+}
 
-  // nominal fps for 29.97 is 30, for 59.94 is 60, for 23.98 is 24
-  if (nominal_fps == 29 || nominal_fps == 59 || nominal_fps == 23)
-    nominal_fps++;
+void Timecode::_setTimecode(uint_fast32_t &frameInput) {
+  uint_fast16_t nominal_fps = _nominalFramerate();
+  uint_fast32_t frameLimit = _maxFrames();
+  uint_fast16_t framesPerMin = 60 * nominal_fps;
+  uint_fast16_t framesPer10Min = framesPerMin * 10;
+  uint_fast32_t framesPerHour = framesPer10Min * 6;
 
-  uint_fast32_t frameLimit = nominal_fps * 60 * 60 * 24;
   if (frameInput >= frameLimit) {
     std::string m = "Invalid frame count, frames cannot be larger than " +
                     std::to_string(frameLimit) + " at " +
@@ -53,17 +50,13 @@ void Timecode::setTimecode(int frameInput) {
     throw std::invalid_argument(m);
   }
 
-  framesPerMin = 60 * nominal_fps;
-  framesPer10Min = framesPerMin * 10;
-
   // 29.97: drop 2 frames per minute, add 2 back for 10th minute
   // 59.94: drop 4 frames per minute, add 4 back for 10th minute
   if (_dropFrame) {
     framesPerMin -= (nominal_fps / 15);
     framesPer10Min = framesPerMin * 10 + (nominal_fps / 15);
+    framesPerHour = framesPer10Min * 6;
   }
-
-  framesPerHour = framesPer10Min * 6;
 
   _hours = frameInput / framesPerHour;
   frameInput %= framesPerHour;
@@ -92,14 +85,27 @@ void Timecode::setTimecode(int frameInput) {
   _frames = frameInput;
 }
 
-void Timecode::setTimecode(const std::string &s) { setTimecode(s.c_str()); }
-
-void Timecode::setTimecode(const char *s) {
+void Timecode::_setTimecode(const char *s) {
   sscanf(s, "%2hu%*1c%2hu%*1c%2hu%*1c%2hu", &_hours, &_minutes, &_seconds,
          &_frames);
 }
 
-void Timecode::validate() {
+uint_fast16_t Timecode::_nominalFramerate() const {
+  uint_fast16_t nominal_fps = static_cast<int>(_frameRate);
+
+  // nominal fps for 29.97 is 30, for 59.94 is 60, for 23.98 is 24
+  if (nominal_fps == 29 || nominal_fps == 23 || nominal_fps == 59)
+    nominal_fps++;
+
+  return nominal_fps;
+}
+
+uint_fast32_t Timecode::_maxFrames() const {
+  // 1 less than frameRate times 60 seconds, 60 minutes, 24 hours
+  return _nominalFramerate() * 60 * 60 * 24 - 1;
+}
+
+void Timecode::_validate() {
   if (_hours > 23) {
     std::string m = "Hours cannot be larger than 23 (" + to_string() + ")";
     throw std::invalid_argument(m);
@@ -114,7 +120,7 @@ void Timecode::validate() {
   }
   if (_frames > _frameRate) {
     std::string m = "Frames cannot be larger than framerate (" + to_string() +
-                    ", " + std::to_string(_frameRate);
+                    ", " + std::to_string(_frameRate) + ")";
     throw std::invalid_argument(m);
   }
   if (_dropFrame && _frames == 0 && _seconds == 0 && _minutes % 10 != 0) {
@@ -125,33 +131,17 @@ void Timecode::validate() {
 
 // Getters
 uint_fast32_t Timecode::totalFrames() const {
-  uint_fast16_t nominal_fps = _frameRate;
-  uint_fast16_t framesPerMin;
-  uint_fast16_t framesPer10Min;
-  uint_fast32_t framesPerHour;
+  uint_fast16_t nominal_fps = _nominalFramerate();
+  uint_fast16_t framesPerMin = 60 * nominal_fps;
+  uint_fast16_t framesPer10Min = framesPerMin * 10;
+  uint_fast32_t framesPerHour = framesPer10Min * 6;
   uint_fast32_t totalFrames = 0;
-
-  switch (static_cast<int>(_frameRate)) {
-  case 29:
-    nominal_fps = 30;
-    break;
-  case 59:
-    nominal_fps = 60;
-    break;
-  case 23:
-    nominal_fps = 24;
-    break;
-  }
-
-  framesPerMin = 60 * nominal_fps;
-  framesPer10Min = framesPerMin * 10;
 
   if (_dropFrame) {
     framesPerMin -= nominal_fps / 15;
     framesPer10Min = (framesPerMin * 10) + (nominal_fps / 15);
+    framesPerHour = framesPer10Min * 6;
   }
-
-  framesPerHour = framesPer10Min * 6;
 
   totalFrames += _hours * framesPerHour;
   totalFrames += (_minutes % 10) * framesPerMin;
@@ -174,18 +164,31 @@ std::string Timecode::to_string() const { return std::string(c_str()); }
 
 char *Timecode::c_str() const {
   static char s[12];
-  sprintf(s, "%02hu%c%02hu%c%02hu%c%02hu", _hours, _separator, _minutes,
-          _separator, _seconds, _separator, _frames);
+  sprintf(s, "%02u%c%02u%c%02u%c%02u", _hours, _separator, _minutes, _separator,
+          _seconds, _separator, _frames);
   return s;
 }
 
 // Operators
 Timecode Timecode::operator+(const Timecode &t) const {
-  return Timecode(totalFrames() + t.totalFrames(), _frameRate, _dropFrame);
+  uint_fast32_t frameSum = totalFrames() + t.totalFrames();
+  frameSum %= _maxFrames();
+  return Timecode(frameSum, _frameRate, _dropFrame);
+}
+
+Timecode Timecode::operator+(const int &i) const {
+  return Timecode(totalFrames() + i, _frameRate, _dropFrame);
 }
 
 Timecode Timecode::operator-(const Timecode &t) const {
-  return Timecode(totalFrames() - t.totalFrames(), _frameRate, _dropFrame);
+  return operator-(t.totalFrames());
+}
+
+Timecode Timecode::operator-(const int &i) const {
+  int_fast32_t f = totalFrames() - i;
+  if (f < 0)
+    f += _maxFrames();
+  return Timecode(f, _frameRate, _dropFrame);
 }
 
 Timecode &Timecode::operator=(const Timecode &t) {
@@ -201,17 +204,7 @@ Timecode &Timecode::operator=(const Timecode &t) {
 }
 
 bool Timecode::operator==(const Timecode &t) const {
-  if (_frames != t._frames)
-    return false;
-  if (_hours != t._hours)
-    return false;
-  if (_minutes != t._minutes)
-    return false;
-  if (_frames != t._frames)
-    return false;
-  if (_frameRate != t._frameRate)
-    return false;
-  return _dropFrame == t._dropFrame;
+  return totalFrames() == t.totalFrames();
 }
 
 bool Timecode::operator!=(const Timecode &t) const { return !(*this == t); }
@@ -221,9 +214,7 @@ bool Timecode::operator<(const Timecode &t) const {
 }
 
 bool Timecode::operator<=(const Timecode &t) const {
-  uint_fast32_t a = totalFrames();
-  uint_fast32_t b = t.totalFrames();
-  return (a < b || a == b);
+  return (*this < t || *this == t);
 }
 
 bool Timecode::operator>(const Timecode &t) const {
@@ -231,9 +222,7 @@ bool Timecode::operator>(const Timecode &t) const {
 }
 
 bool Timecode::operator>=(const Timecode &t) const {
-  uint_fast32_t a = totalFrames();
-  uint_fast32_t b = t.totalFrames();
-  return (a > b || a == b);
+  return (*this > t || *this == t);
 }
 
 std::ostream &operator<<(std::ostream &out, const Timecode &t) {
@@ -244,6 +233,6 @@ std::ostream &operator<<(std::ostream &out, const Timecode &t) {
 std::istream &operator>>(std::istream &in, Timecode &t) {
   std::string input;
   in >> input;
-  t.setTimecode(input);
+  t._setTimecode(input.c_str());
   return in;
 }
