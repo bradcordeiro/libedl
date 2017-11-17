@@ -107,26 +107,31 @@ uint_fast32_t Timecode::_maxFrames() const {
 
 void Timecode::_validate() {
   if (_hours > 23) {
-    throw std::invalid_argument("Hours cannot be larger than 23 (" + to_string() + ")");
+    throw std::invalid_argument("Hours cannot be larger than 23 (" +
+                                to_string() + ")");
   }
   if (_minutes > 59) {
-    throw std::invalid_argument("Minutes cannot be larger than 59 (" + to_string() + ")");
+    throw std::invalid_argument("Minutes cannot be larger than 59 (" +
+                                to_string() + ")");
   }
   if (_seconds > 59) {
-    throw std::invalid_argument("Seconds cannot be larger than 59 (" + to_string() + ")");
+    throw std::invalid_argument("Seconds cannot be larger than 59 (" +
+                                to_string() + ")");
   }
   if (_frames > _frameRate) {
-    throw std::invalid_argument("Frames cannot be larger than framerate (" + to_string() +
-                                ", " + std::to_string(_frameRate) + ")");
+    throw std::invalid_argument("Frames cannot be larger than framerate (" +
+                                to_string() + ", " +
+                                std::to_string(_frameRate) + ")");
   }
   if (_dropFrame && _frames == 0 && _seconds == 0 && _minutes % 10 != 0) {
-    throw std::invalid_argument("Frames dropped in dropframe passed (" + to_string() + ")");
+    throw std::invalid_argument("Frames dropped in dropframe passed (" +
+                                to_string() + ")");
   }
 };
 
 // Getters
 
-inline uint_fast16_t Timecode::hours() const { return _hours; }
+uint_fast16_t Timecode::hours() const { return _hours; }
 
 uint_fast16_t Timecode::minutes() const { return _minutes; }
 
@@ -172,7 +177,6 @@ void Timecode::frames(const uint_fast16_t &f) { _frames = f; }
 void Timecode::framerate(const double &f) { _frameRate = f; }
 
 void Timecode::dropframe(const bool &b) { _dropFrame = b; }
-
 
 // Type conversion
 

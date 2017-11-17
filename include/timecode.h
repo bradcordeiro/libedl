@@ -32,20 +32,20 @@ public:
   explicit Timecode(std::string, double = 30.0, bool = false);
 
   // getters
-  inline uint_fast16_t hours() const;
-  inline uint_fast16_t minutes() const;
-  inline uint_fast16_t seconds() const;
-  inline uint_fast16_t frames() const;
-  inline double framerate() const;
-  inline bool dropframe() const;
+  uint_fast16_t hours() const;
+  uint_fast16_t minutes() const;
+  uint_fast16_t seconds() const;
+  uint_fast16_t frames() const;
+  double framerate() const;
+  bool dropframe() const;
   uint_fast32_t totalFrames() const;
   // setters
-  inline void hours(const uint_fast16_t &);
-  inline void minutes(const uint_fast16_t &);
-  inline void seconds(const uint_fast16_t &);
-  inline void frames(const uint_fast16_t &);
-  inline void framerate(const double &);
-  inline void dropframe(const bool &);
+  void hours(const uint_fast16_t &);
+  void minutes(const uint_fast16_t &);
+  void seconds(const uint_fast16_t &);
+  void frames(const uint_fast16_t &);
+  void framerate(const double &);
+  void dropframe(const bool &);
 
   // type conversion
   operator int() const;
