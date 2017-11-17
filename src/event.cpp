@@ -1,4 +1,5 @@
 #include "../include/event.h"
+#include "../include/timecode.h"
 #include <cstdio>
 #include <iomanip>
 #include <iostream>
@@ -8,14 +9,26 @@ Event::Event()
     : _eventNumber(0), _trackType('V'), _trackNumber(1), _fps(30.0), _df(false),
       _sourceStart(Timecode()), _sourceEnd(Timecode()),
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),
-      _sourceFileName(""), _comment("") {}
+      _sourceFileName(""), _comment(""), _motionEffect(MotionEffect()) {}
 
 Event::Event(const std::string line, double f, bool b)
     : _eventNumber(0), _trackType('V'), _trackNumber(1), _fps(f), _df(b),
       _sourceStart(Timecode()), _sourceEnd(Timecode()),
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),
-      _sourceFileName(""), _comment("") {
-    _parseEvent(line);
+      _sourceFileName(""), _comment(""), _motionEffect(MotionEffect()) {
+  _parseEvent(line);
+}
+
+std::string Event::motionEffectReel() const {
+  return hasMotionEffect() ? _motionEffect.reel() : reel();
+}
+
+double Event::motionEffectSpeed() const {
+  return hasMotionEffect() ? _motionEffect.speed() : _fps;
+}
+
+Timecode Event::motionEffectEntryPoint() const {
+  return hasMotionEffect() ? _motionEffect.entryPoint() : sourceStart();
 }
 
 void Event::_setEventClipData(const std::string &s) {
@@ -30,15 +43,15 @@ void Event::_setEventClipData(const std::string &s) {
 
 void Event::_parseEvent(const std::string &line) {
   uint_fast16_t eventNumberRead;
-  char reelRead[9];
+  char *reelRead = new char[9];
   char trackTypeRead;
-  char sstart[12];
-  char send[12];
-  char rstart[12];
-  char rend[12];
+  char *sstart = new char[12];
+  char *send = new char[12];
+  char *rstart = new char[12];
+  char *rend = new char[12];
 
   if (sscanf(line.c_str(), "%3hu %s %c %*s %*s %s %s %s %s", &eventNumberRead,
-             &reelRead, &trackTypeRead, sstart, send, rstart, rend) == 7) {
+             reelRead, &trackTypeRead, sstart, send, rstart, rend) == 7) {
     // 077  EVL1_HIG V     W001 010 00:02:51:25 00:02:52:07 01:00:28:10
     // 01:00:28:23
     _eventNumber = eventNumberRead;
@@ -49,7 +62,7 @@ void Event::_parseEvent(const std::string &line) {
     _recordStart = Timecode(rstart, _fps, _df);
     _recordEnd = Timecode(rend, _fps, _df);
   } else if (sscanf(line.c_str(), "%3hu %s %c %*c %s %s %s %s",
-                    &eventNumberRead, &reelRead, &trackTypeRead, sstart, send,
+                    &eventNumberRead, reelRead, &trackTypeRead, sstart, send,
                     rstart, rend) == 7) {
     // 008  EVL1_HEI V     C        00:02:46:15 00:02:47:02 01:00:01:05
     // 01:00:01:16
@@ -60,15 +73,30 @@ void Event::_parseEvent(const std::string &line) {
     _sourceEnd = Timecode(send, _fps, _df);
     _recordStart = Timecode(rstart, _fps, _df);
     _recordEnd = Timecode(rend, _fps, _df);
+  } else {
+    throw std::invalid_argument("Invalid event string");
   }
+
+  delete[] reelRead;
+  delete[] sstart;
+  delete[] send;
+  delete[] rstart;
+  delete[] rend;
 }
 
 void Event::comment(const std::string &s, bool append) {
-  if (!_comment.empty() || append == true)
-    _comment += "\n";
-
-  _comment += s;
+  if (append) {
+    _comment += s;
+  } else {
+    _comment = s;
+  }
 }
+
+void Event::motionEffect(const std::string s) {
+  _motionEffect = MotionEffect(s);
+}
+
+void Event::motionEffect(const MotionEffect &m) { _motionEffect = m; }
 
 std::ostream &operator<<(std::ostream &out, const Event &e) {
   out << std::setw(3) << std::setfill('0') << e._eventNumber << "  "
@@ -78,12 +106,22 @@ std::ostream &operator<<(std::ostream &out, const Event &e) {
       << std::setw(12) << e._sourceStart << std::setw(12) << e._sourceEnd
       << std::setw(12) << e._recordStart << std::setw(12) << e._recordEnd
       << std::endl;
-  if (!e._comment.empty()) {
-    out << "* " << e._comment << std::endl; // TODO: Print 80-char length lines
+  if (e.hasMotionEffect()) {
+    out << std::setw(5) << std::left << "M2" << std::setw(15) << std::left
+        << e.motionEffectReel() << std::setw(21) << std::left
+        << e.motionEffectSpeed() << e.motionEffectEntryPoint() << std::endl;
   }
+
+  if (!e._comment.empty()) {
+    for (int i = 0; i < e._comment.size(); i += 80){
+        out << "* " << e._comment.substr(i, 80) << std::endl;
+    }
+  }
+
   if (!e._sourceClipName.empty()) {
     out << "* FROM CLIP NAME:  " << e._sourceClipName << std::endl;
   }
+
   if (!e._sourceFileName.empty()) {
     out << "* FROM FILE: " << e._sourceFileName << std::endl;
   }
