@@ -24,7 +24,7 @@ Timecode::Timecode(const char *s, double f, bool b)
   _validate();
 }
 
-Timecode::Timecode(const std::string s, double f, bool b)
+Timecode::Timecode(std::string s, double f, bool b)
     : _frameRate(f), _dropFrame(b), _separator(_setSeparator()) {
   _setTimecode(s.c_str());
 }
@@ -107,29 +107,37 @@ uint_fast32_t Timecode::_maxFrames() const {
 
 void Timecode::_validate() {
   if (_hours > 23) {
-    std::string m = "Hours cannot be larger than 23 (" + to_string() + ")";
-    throw std::invalid_argument(m);
+    throw std::invalid_argument("Hours cannot be larger than 23 (" + to_string() + ")");
   }
   if (_minutes > 59) {
-    std::string m = "Minutes cannot be larger than 59 (" + to_string() + ")";
-    throw std::invalid_argument(m);
+    throw std::invalid_argument("Minutes cannot be larger than 59 (" + to_string() + ")");
   }
   if (_seconds > 59) {
-    std::string m = "Seconds cannot be larger than 59 (" + to_string() + ")";
-    throw std::invalid_argument(m);
+    throw std::invalid_argument("Seconds cannot be larger than 59 (" + to_string() + ")");
   }
   if (_frames > _frameRate) {
-    std::string m = "Frames cannot be larger than framerate (" + to_string() +
-                    ", " + std::to_string(_frameRate) + ")";
-    throw std::invalid_argument(m);
+    throw std::invalid_argument("Frames cannot be larger than framerate (" + to_string() +
+                                ", " + std::to_string(_frameRate) + ")");
   }
   if (_dropFrame && _frames == 0 && _seconds == 0 && _minutes % 10 != 0) {
-    std::string m = "Frames dropped in dropframe passed (" + to_string() + ")";
-    throw std::invalid_argument(m);
+    throw std::invalid_argument("Frames dropped in dropframe passed (" + to_string() + ")");
   }
 };
 
 // Getters
+
+inline uint_fast16_t Timecode::hours() const { return _hours; }
+
+uint_fast16_t Timecode::minutes() const { return _minutes; }
+
+uint_fast16_t Timecode::seconds() const { return _seconds; }
+
+double Timecode::framerate() const { return _frameRate; }
+
+bool Timecode::dropframe() const { return _dropFrame; }
+
+uint_fast16_t Timecode::frames() const { return _frames; }
+
 uint_fast32_t Timecode::totalFrames() const {
   uint_fast16_t nominal_fps = _nominalFramerate();
   uint_fast16_t framesPerMin = 60 * nominal_fps;
@@ -151,6 +159,20 @@ uint_fast32_t Timecode::totalFrames() const {
 
   return totalFrames;
 }
+
+// Setters
+void Timecode::hours(const uint_fast16_t &h) { _hours = h; }
+
+void Timecode::minutes(const uint_fast16_t &m) { _minutes = m; }
+
+void Timecode::seconds(const uint_fast16_t &s) { _seconds = s; }
+
+void Timecode::frames(const uint_fast16_t &f) { _frames = f; }
+
+void Timecode::framerate(const double &f) { _frameRate = f; }
+
+void Timecode::dropframe(const bool &b) { _dropFrame = b; }
+
 
 // Type conversion
 
