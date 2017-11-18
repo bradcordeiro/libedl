@@ -2,7 +2,9 @@ test/gtest-all.o
 test/gtest.h
 test/*.edl
 
+build
+
 .idea
-Makefile
 
 CMakeLists.txt
+cmake-build-debug
