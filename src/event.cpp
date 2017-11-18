@@ -11,7 +11,7 @@ Event::Event()
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),
       _sourceFileName(""), _comment(""), _motionEffect(MotionEffect()) {}
 
-Event::Event(const std::string line, double f, bool b)
+Event::Event(const std::string &line, const double &f, const bool &b)
     : _eventNumber(0), _trackType('V'), _trackNumber(1), _fps(f), _df(b),
       _sourceStart(Timecode()), _sourceEnd(Timecode()),
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),

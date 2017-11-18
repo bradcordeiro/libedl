@@ -13,7 +13,7 @@ class Event {
   friend class Edl;
 
 private:
-  uint_fast16_t _eventNumber;
+  int_fast16_t _eventNumber;
   char _trackType;
   uint_fast16_t _trackNumber;
   double _fps;
@@ -33,9 +33,9 @@ private:
 public:
   // constructors
   Event();
-  explicit Event(const std::string, double = 30.0, bool = false);
+  explicit Event(const std::string&, const double& = 30.0, const bool& = false);
   // getters
-  inline uint_fast16_t eventNumber() const { return _eventNumber; }
+  inline int_fast16_t eventNumber() const { return _eventNumber; }
   inline char trackType() const { return _trackType; }
   inline uint_fast16_t trackNumber() const { return _trackNumber; } // TODO
   inline std::string reel() const { return _reel; }
@@ -53,7 +53,7 @@ public:
   inline bool hasMotionEffect() const { return _motionEffect.speed() != 0; }
   // setters
   void dropFrame(const bool &b) { _df = b; }
-  void eventNumber(const uint_fast16_t &i) { _eventNumber = i; };
+  void eventNumber(const int_fast16_t &i) { _eventNumber = i; };
   void reel(const std::string &s) { _reel = s; }
   void trackType(const char &c) { _trackType = c; }
   void sourceStart(const std::string &s) { _sourceStart = tc(s, _fps, _df); }

@@ -23,13 +23,12 @@ private:
 public:
   // constructors
   Edl();
-  Edl(std::ifstream &);
+  explicit Edl(std::ifstream &);
   Edl(Edl &);
-  // destructor
   // getters
   inline std::string name() const { return _name; }
   inline unsigned long size() const { return _events.size(); }
-  Event event(const int &i) const;
+  Event event(int , int = 0, int = -1 ) const;
   // setters
   void setName(const std::string &input) { _name = input; }
   void setFrameRate(const double &);
