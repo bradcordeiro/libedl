@@ -19,7 +19,7 @@ build/timecode.o: include/timecode.h src/timecode.cpp
 	mkdir -p build
 	g++ -c --std=c++11 src/timecode.cpp -o build/timecode.o
 
-roundtrip: build/edl.o build/event.o build/timecode.o examples/roundtrip.cpp
+roundtrip: build/edl.o build/event.o build/timecode.o build/motioneffect.o examples/roundtrip.cpp
 	g++ --std=c++11 build/edl.o build/event.o build/timecode.o build/motioneffect.o examples/roundtrip.cpp -o roundtrip
 
 tests: test/gtest-all.o test/timecode_test.cpp src/event.cpp src/motioneffect.cpp src/timecode.cpp
