@@ -20,8 +20,8 @@ Event::Event(const std::string &line, const double &f, const bool &b)
 }
 
 Event::~Event() {
-  if (_motionEffect)
-    delete _motionEffect;
+  delete _motionEffect;
+  _motionEffect = 0;
 }
 
 std::string Event::motionEffectReel() const {
@@ -47,15 +47,16 @@ void Event::_setEventClipData(const std::string &s) {
 }
 
 void Event::_parseEvent(const std::string &line) {
-  uint_fast16_t eventNumberRead;
+  int eventNumberRead;
   char reelRead[9];
   char trackTypeRead;
+  int trackNumberRead;
   char sstart[12];
   char send[12];
   char rstart[12];
   char rend[12];
 
-  if (sscanf(line.c_str(), "%3hu %s %c %*s %*s %s %s %s %s", &eventNumberRead,
+  if (sscanf(line.c_str(), "%d %s %c %*s %*s %s %s %s %s", &eventNumberRead,
              reelRead, &trackTypeRead, sstart, send, rstart, rend) == 7) {
     // 077  EVL1_HIG V     W001 010 00:02:51:25 00:02:52:07 01:00:28:10
     // 01:00:28:23
@@ -66,14 +67,27 @@ void Event::_parseEvent(const std::string &line) {
     _sourceEnd = Timecode(send, _fps, _df);
     _recordStart = Timecode(rstart, _fps, _df);
     _recordEnd = Timecode(rend, _fps, _df);
-  } else if (sscanf(line.c_str(), "%3hu %s %c %*c %s %s %s %s",
-                    &eventNumberRead, reelRead, &trackTypeRead, sstart, send,
-                    rstart, rend) == 7) {
+  } else if (sscanf(line.c_str(), "%d %s %c %*c %s %s %s %s", &eventNumberRead,
+                    reelRead, &trackTypeRead, sstart, send, rstart,
+                    rend) == 7) {
     // 008  EVL1_HEI V     C        00:02:46:15 00:02:47:02 01:00:01:05
     // 01:00:01:16
     _eventNumber = eventNumberRead;
     _reel = reelRead;
     _trackType = trackTypeRead;
+    _sourceStart = Timecode(sstart, _fps, _df);
+    _sourceEnd = Timecode(send, _fps, _df);
+    _recordStart = Timecode(rstart, _fps, _df);
+    _recordEnd = Timecode(rend, _fps, _df);
+  } else if (sscanf(line.c_str(), "%d %s %c%d %*c %s %s %s %s",
+                    &eventNumberRead, reelRead, &trackTypeRead,
+                    &trackNumberRead, sstart, send, rstart, rend) == 8) {
+    // 0064 EP_107 A34    C        01:02:02:08 01:02:02:16 01:03:42:02
+    // 01:03:42:10
+    _eventNumber = eventNumberRead;
+    _reel = reelRead;
+    _trackType = trackTypeRead;
+    _trackNumber = trackNumberRead;
     _sourceStart = Timecode(sstart, _fps, _df);
     _sourceEnd = Timecode(send, _fps, _df);
     _recordStart = Timecode(rstart, _fps, _df);
@@ -114,8 +128,8 @@ std::ostream &operator<<(std::ostream &out, const Event &e) {
   }
 
   if (!e._comment.empty()) {
-    for (int i = 0; i < e._comment.size(); i += 80){
-        out << "* " << e._comment.substr(i, 80) << std::endl;
+    for (int i = 0; i < e._comment.size(); i += 80) {
+      out << "* " << e._comment.substr(i, 80) << std::endl;
     }
   }
 

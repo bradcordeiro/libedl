@@ -26,37 +26,39 @@ private:
   std::string _sourceClipName;
   std::string _sourceFileName;
   std::string _comment;
-  MotionEffect* _motionEffect;
+  MotionEffect *_motionEffect;
   void _setEventClipData(const std::string &s);
   void _parseEvent(const std::string &);
 
 public:
   // constructors
   Event();
-  explicit Event(const std::string&, const double& = 30.0, const bool& = false);
+  explicit Event(const std::string &, const double & = 30.0,
+                 const bool & = false);
   ~Event();
   // getters
-  inline int_fast16_t eventNumber() const { return _eventNumber; }
-  inline char trackType() const { return _trackType; }
-  inline uint_fast16_t trackNumber() const { return _trackNumber; } // TODO
-  inline std::string reel() const { return _reel; }
-  inline std::string sourceClipName() const { return _sourceClipName; }
-  inline std::string sourceFileName() const { return _sourceFileName; }
-  inline std::string comment() const { return _comment; }
-  inline Timecode sourceStart() const { return _sourceStart; }
-  inline Timecode sourceEnd() const { return _sourceEnd; }
-  inline Timecode recordStart() const { return _recordStart; }
-  inline Timecode recordEnd() const { return _recordEnd; }
-  inline MotionEffect motionEffect() const { return *_motionEffect; }
+  int_fast16_t eventNumber() const { return _eventNumber; }
+  char trackType() const { return _trackType; }
+  uint_fast16_t trackNumber() const { return _trackNumber; }
+  std::string reel() const { return _reel; }
+  std::string sourceClipName() const { return _sourceClipName; }
+  std::string sourceFileName() const { return _sourceFileName; }
+  std::string comment() const { return _comment; }
+  Timecode sourceStart() const { return _sourceStart; }
+  Timecode sourceEnd() const { return _sourceEnd; }
+  Timecode recordStart() const { return _recordStart; }
+  Timecode recordEnd() const { return _recordEnd; }
+  MotionEffect motionEffect() const { return *_motionEffect; }
   std::string motionEffectReel() const;
   double motionEffectSpeed() const;
   Timecode motionEffectEntryPoint() const;
-  inline bool hasMotionEffect() const { return _motionEffect != 0; }
+  bool hasMotionEffect() const { return _motionEffect != 0; }
   // setters
   void dropFrame(const bool &b) { _df = b; }
   void eventNumber(const int_fast16_t &i) { _eventNumber = i; };
   void reel(const std::string &s) { _reel = s; }
   void trackType(const char &c) { _trackType = c; }
+  void trackNumber(const int &i) { _trackNumber = i; }
   void sourceStart(const std::string &s) { _sourceStart = tc(s, _fps, _df); }
   void sourceStart(const int &i) { _sourceStart = tc(i, _fps, _df); }
   void sourceStart(const Timecode &t) { _sourceStart = t; }
@@ -72,6 +74,7 @@ public:
   void comment(const std::string &, bool = true);
   void motionEffect(const std::string);
   void motionEffect(const MotionEffect &);
+  void removeMotionEffect();
   void sourceFileName(const std::string &s) { _sourceFileName = s; }
   void sourceClipName(const std::string &s) { _sourceClipName = s; }
   // operator overloads

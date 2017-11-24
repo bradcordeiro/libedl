@@ -13,8 +13,8 @@ private:
 public:
   // constructors
   MotionEffect();
-  explicit MotionEffect(std::string);
   MotionEffect(const std::string &, const float &, const Timecode &);
+  explicit MotionEffect(std::string);
   // getters
   std::string reel() const;
   float speed() const;
