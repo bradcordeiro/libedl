@@ -59,6 +59,8 @@ void Edl::_setDropFrame(const std::string &input) {
 
 std::string Edl::name() const { return _name; }
 
+void Edl::dropFrame(const bool &b) { _dropFrame = b; }
+
 unsigned long Edl::size() const { return _events.size(); }
 
 Event Edl::event(int i, int min, int max) const {

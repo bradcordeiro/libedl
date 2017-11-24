@@ -32,7 +32,8 @@ public:
   // setters
   void name(const std::string &input);
   void frameRate(const double &);
-  void dropFrame(const bool &b) { _dropFrame = b; }
+  void dropFrame(const bool &b);
+
   // operator overloads
   Edl &operator=(const Edl &); // shallow copy
   Event operator[](const int &) const;
