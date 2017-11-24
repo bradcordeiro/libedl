@@ -124,25 +124,13 @@ Each constructor provides a default framerate and dropframe boolean. These are 3
 * **void eventNumber(int)** : Sets event number (not that this can be different from the event's index in an EDL)
 * **void reel(std::string)** : Sets the Event's reel
 * **void trackType(char)** : Sets the Event's track type (typicaly 'V' for video or 'A' for audio)
+* **void sourceStart(Timecode)** : Set source start timecode from a Timecode object.
+* **void sourceEnd(Timecode)** : Set source end timecode from a Timecode object.
+* **void recordStart(Timecode)** : Set record start timecode from a Timecode object.
+* **void recordEnd(Timecode)** : Set record end timecode from a Timecode object.
 * **void comment(std::string, bool)** : Sets the Event's comment. Because comments can span multiple lines, you may also pass a boolean on wether you want the comment to be appended. This defaults to false, which overwrites any existing comment.
 * **void sourceFileName(std::string)** : Sets the Event source's file name.
 * **void sourceClipName(std::string)** : Sets the Event source's clip name.
-
-##### Event Timecode Setters
-
-Each event can store four timecodes: source clip start timecode, source clip end timecode, record start timecode, and record end timecode. Explanations below use sourceStart as an example, but the four timecodes all offer identical function signatures. The four functions are:
-
-* **sourceStart()**
-* **sourceEnd()**
-* **recordStart()**
-* **recordEnd()**
-
-The available signatures for each are:
-
-* **void sourceStart(std::string)** : Set source clip start timecode from a string object, in the format "00:00:00:00".
-* **void sourceStart(int)** : Set source clip timecode from a number of frames.
-* **void sourceStart(Timecode)** : Set source timecode from a Timecode object.
-
 
 #### Event Operators
 
