@@ -16,9 +16,9 @@ private:
   double _frameRate;
   bool _dropFrame;
   std::vector<Event> _events;
-  void setNameFromHeader(std::string);
-  void setDropFrame(const std::string &);
-  void setFrameRate(const std::string &);
+  void _nameFromHeader(std::string);
+  void _setDropFrame(const std::string &);
+  void _setFrameRate(const std::string &);
 
 public:
   // constructors
@@ -26,13 +26,13 @@ public:
   explicit Edl(std::ifstream &);
   Edl(Edl &);
   // getters
-  inline std::string name() const { return _name; }
-  inline unsigned long size() const { return _events.size(); }
-  Event event(int , int = 0, int = -1 ) const;
+  std::string name() const;
+  unsigned long size() const;
+  Event event(int, int = 0, int = -1) const;
   // setters
-  void setName(const std::string &input) { _name = input; }
-  void setFrameRate(const double &);
-  inline void setDropFrame(const bool &b) { _dropFrame = b; }
+  void name(const std::string &input);
+  void frameRate(const double &);
+  void dropFrame(const bool &b) { _dropFrame = b; }
   // operator overloads
   Edl &operator=(const Edl &); // shallow copy
   Event operator[](const int &) const;

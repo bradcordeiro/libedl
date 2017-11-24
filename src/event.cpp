@@ -19,21 +19,7 @@ Event::Event(const std::string &line, const double &f, const bool &b)
   _parseEvent(line);
 }
 
-Event::~Event() {
-  removeMotionEffect();
-}
-
-std::string Event::motionEffectReel() const {
-  return hasMotionEffect() ? _motionEffect->reel() : reel();
-}
-
-double Event::motionEffectSpeed() const {
-  return hasMotionEffect() ? _motionEffect->speed() : _fps;
-}
-
-Timecode Event::motionEffectEntryPoint() const {
-  return hasMotionEffect() ? _motionEffect->entryPoint() : sourceStart();
-}
+Event::~Event() { removeMotionEffect(); }
 
 void Event::_setEventClipData(const std::string &s) {
   if (s.compare(0, 17, "* FROM CLIP NAME:") == 0) {
@@ -96,6 +82,42 @@ void Event::_parseEvent(const std::string &line) {
   }
 }
 
+int_fast16_t Event::eventNumber() const { return _eventNumber; }
+char Event::trackType() const { return _trackType; }
+uint_fast16_t Event::trackNumber() const { return _trackNumber; }
+std::string Event::reel() const { return _reel; }
+std::string Event::sourceClipName() const { return _sourceClipName; }
+std::string Event::sourceFileName() const { return _sourceFileName; }
+std::string Event::comment() const { return _comment; }
+Timecode Event::sourceStart() const { return _sourceStart; }
+Timecode Event::sourceEnd() const { return _sourceEnd; }
+Timecode Event::recordStart() const { return _recordStart; }
+Timecode Event::recordEnd() const { return _recordEnd; }
+MotionEffect Event::motionEffect() const { return *_motionEffect; }
+bool Event::hasMotionEffect() const { return _motionEffect != 0; }
+
+std::string Event::motionEffectReel() const {
+  return hasMotionEffect() ? _motionEffect->reel() : reel();
+}
+
+double Event::motionEffectSpeed() const {
+  return hasMotionEffect() ? _motionEffect->speed() : _fps;
+}
+
+Timecode Event::motionEffectEntryPoint() const {
+  return hasMotionEffect() ? _motionEffect->entryPoint() : sourceStart();
+}
+
+void Event::dropFrame(const bool &b) { _df = b; }
+void Event::eventNumber(const int_fast16_t &i) { _eventNumber = i; };
+void Event::reel(const std::string &s) { _reel = s; }
+void Event::trackType(const char &c) { _trackType = c; }
+void Event::trackNumber(const int &i) { _trackNumber = i; }
+void Event::sourceStart(const Timecode &t) { _sourceStart = t; }
+void Event::sourceEnd(const Timecode &t) { _sourceEnd = t; }
+void Event::recordStart(const Timecode &t) { _recordStart = t; }
+void Event::recordEnd(const Timecode &t) { _sourceStart = t; }
+
 void Event::comment(const std::string &s, bool append) {
   if (append) {
     _comment += s;
@@ -116,6 +138,9 @@ void Event::removeMotionEffect() {
   delete _motionEffect;
   _motionEffect = 0;
 }
+
+void Event::sourceFileName(const std::string &s) { _sourceFileName = s; }
+void Event::sourceClipName(const std::string &s) { _sourceClipName = s; }
 
 std::ostream &operator<<(std::ostream &out, const Event &e) {
   out << std::setw(3) << std::setfill('0') << e._eventNumber << "  "

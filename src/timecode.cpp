@@ -91,7 +91,8 @@ void Timecode::_setTimecode(uint_fast32_t &frameInput) {
 
 void Timecode::_setTimecode(const char *c) {
 
-  if (sscanf(c, "%2hu%*1c%2hu%*1c%2hu%*1c%2hu", &_hours, &_minutes, &_seconds, &_frames) != 4) {
+  if (sscanf(c, "%2hu%*1c%2hu%*1c%2hu%*1c%2hu", &_hours, &_minutes, &_seconds,
+             &_frames) != 4) {
     _hours = _minutes = _seconds = _frames = 0;
     throw(std::invalid_argument("Invalid string passed."));
   }
@@ -127,8 +128,8 @@ void Timecode::_validate() {
   }
   if (_frames > _frameRate) {
     throw std::invalid_argument("Frames cannot be larger than framerate (" +
-                            to_string() + ", " + std::to_string(_frameRate) +
-                            " passed)");
+                                to_string() + ", " +
+                                std::to_string(_frameRate) + " passed)");
   }
   if (_dropFrame && _frames == 0 && _seconds == 0 && _minutes % 10 != 0) {
     throw std::invalid_argument("Frames dropped in dropframe passed (" +
@@ -210,7 +211,9 @@ Timecode Timecode::operator+(const Timecode &t) const {
 }
 
 Timecode Timecode::operator+(const int &i) const {
-  return Timecode(totalFrames() + i, _frameRate, _dropFrame);
+  uint_fast32_t frameSum = totalFrames() + i;
+  frameSum %= (maxFrames() + 1);
+  return Timecode(frameSum, _frameRate, _dropFrame);
 }
 
 Timecode Timecode::operator-(const Timecode &t) const {
