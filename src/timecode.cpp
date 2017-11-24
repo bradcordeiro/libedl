@@ -41,6 +41,7 @@ void Timecode::_setSeparator() { _separator = (_dropFrame ? ';' : ':'); }
 
 void Timecode::_setTimecode(uint_fast32_t &frameInput) {
   uint_fast16_t nominal_fps = _nominalFramerate();
+  uint_fast16_t dropCount = nominal_fps / 15;
   uint_fast32_t frameLimit = maxFrames();
   uint_fast16_t framesPerMin = 60 * nominal_fps;
   uint_fast16_t framesPer10Min = framesPerMin * 10;
@@ -54,11 +55,9 @@ void Timecode::_setTimecode(uint_fast32_t &frameInput) {
     throw std::invalid_argument(m);
   }
 
-  // 29.97: drop 2 frames per minute, add 2 back for 10th minute
-  // 59.94: drop 4 frames per minute, add 4 back for 10th minute
   if (_dropFrame) {
     framesPerMin -= (nominal_fps / 15);
-    framesPer10Min = framesPerMin * 10 + (nominal_fps / 15);
+    framesPer10Min = framesPerMin * 10 + dropCount;
     framesPerHour = framesPer10Min * 6;
   }
 
@@ -71,11 +70,11 @@ void Timecode::_setTimecode(uint_fast32_t &frameInput) {
     // (frame 0 on any minute except every tenth minute)
     uint_fast16_t ten_minute = frameInput / framesPer10Min;
     frameInput %= framesPer10Min;
-    frameInput -= 2;
+    frameInput -= dropCount;
     uint_fast16_t unit_minute = frameInput / framesPerMin;
     frameInput %= framesPerMin;
     _minutes = ten_minute * 10 + unit_minute;
-    frameInput += 2;
+    frameInput += dropCount;
   } else {
     _minutes = (frameInput / framesPer10Min);
     frameInput %= framesPer10Min;
@@ -102,15 +101,21 @@ uint_fast16_t Timecode::_nominalFramerate() const {
   uint_fast16_t nominal_fps = static_cast<int>(_frameRate);
 
   // nominal fps for 29.97 is 30, for 59.94 is 60, for 23.98 is 24
-  if (nominal_fps == 29 || nominal_fps == 23 || nominal_fps == 59)
-    nominal_fps++;
-
-  return nominal_fps;
+  switch(nominal_fps) {
+    case 29:
+    case 23:
+    case 59:
+      return ++nominal_fps;
+    default:
+      return nominal_fps;
+  }
 }
 
 uint_fast32_t Timecode::maxFrames() const {
   // 1 less than frameRate times 60 seconds, 60 minutes, 24 hours
-  return _nominalFramerate() * 60 * 60 * 24 - 1;
+  Timecode t(23, 59, 59, _nominalFramerate() - 1, _frameRate, _dropFrame);
+
+  return t.totalFrames();
 }
 
 void Timecode::_validate() {
@@ -159,8 +164,9 @@ uint_fast32_t Timecode::totalFrames() const {
   uint_fast32_t totalFrames = 0;
 
   if (_dropFrame) {
-    framesPerMin -= nominal_fps / 15;
-    framesPer10Min = (framesPerMin * 10) + (nominal_fps / 15);
+    uint_fast16_t dropCount = nominal_fps / 15;
+    framesPerMin -= dropCount;
+    framesPer10Min = (framesPerMin * 10) + dropCount;
     framesPerHour = framesPer10Min * 6;
   }
 
@@ -205,9 +211,7 @@ const char *Timecode::c_str() const {
 
 // Operators
 Timecode Timecode::operator+(const Timecode &t) const {
-  uint_fast32_t frameSum = totalFrames() + t.totalFrames();
-  frameSum %= maxFrames();
-  return Timecode(frameSum, _frameRate, _dropFrame);
+  return operator+(t.totalFrames());
 }
 
 Timecode Timecode::operator+(const int &i) const {
