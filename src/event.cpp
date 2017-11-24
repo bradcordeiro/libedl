@@ -19,6 +19,11 @@ Event::Event(const std::string &line, const double &f, const bool &b)
   _parseEvent(line);
 }
 
+Event::~Event() {
+  if (_motionEffect)
+    delete _motionEffect;
+}
+
 std::string Event::motionEffectReel() const {
   return hasMotionEffect() ? _motionEffect->reel() : reel();
 }

@@ -34,6 +34,7 @@ public:
   // constructors
   Event();
   explicit Event(const std::string&, const double& = 30.0, const bool& = false);
+  ~Event();
   // getters
   inline int_fast16_t eventNumber() const { return _eventNumber; }
   inline char trackType() const { return _trackType; }
