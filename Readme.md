@@ -184,7 +184,7 @@ The available constructors are:
 * **int** : Converts the Timecode to an integer holding the total frame count.
 * **char \*** : Converts the Timecode to a C-String, in the format "00:00:00:00".
 * **std::string** : Converts the Timecode to a string object, in the format "00:00:00:00".
-* **char \* c_str()** : Returns a C-String of the Timecode in the format "
+* **char \* c_str()** : Returns a C-String of the Timecode in the format "00:00:00:00".
 * **std::string to_string()** : Returns a string object of the Timecode in the format "00:00:00:00";
 
 ### Operators
