@@ -1,3 +1,6 @@
+#ifndef _MOTIONEFFECT_H_
+#define _MOTIONEFFECT_H_
+
 #include "timecode.h"
 #include <string>
 
@@ -22,3 +25,5 @@ public:
   void entryPoint(const Timecode &t);
   void entryPoint(const std::string &s);
 };
+
+#endif // _MOTIONEFFECT_H_
