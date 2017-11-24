@@ -22,8 +22,8 @@ build/timecode.o: include/timecode.h src/timecode.cpp
 roundtrip: build/edl.o build/event.o build/timecode.o examples/roundtrip.cpp
 	g++ --std=c++11 build/edl.o build/event.o build/timecode.o build/motioneffect.o examples/roundtrip.cpp -o roundtrip
 
-tests: test/gtest-all.o test/timecode_test.cpp src/timecode.cpp
-	g++ -isystem $(GTEST_DIR)/include -pthread test/gtest-all.o test/timecode_test.cpp src/timecode.cpp -o test/timecode_test
+tests: test/gtest-all.o test/timecode_test.cpp src/event.cpp src/motioneffect.cpp src/timecode.cpp
+	g++ -isystem $(GTEST_DIR)/include -pthread test/gtest-all.o test/timecode_test.cpp src/event.cpp src/motioneffect.cpp src/timecode.cpp -o test/timecode_test
 	test/timecode_test
 	rm test/timecode_test
 
