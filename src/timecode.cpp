@@ -9,35 +9,39 @@
 Timecode::Timecode(uint_fast16_t h, uint_fast16_t m, uint_fast16_t s,
                    uint_fast16_t fr, double f, bool b)
     : _hours(h), _minutes(m), _seconds(s), _frames(fr), _frameRate(f),
-      _dropFrame(b), _separator(_setSeparator()) {
+      _dropFrame(b), _separator(':') {
+  _setSeparator();
   _validate();
 }
 
 Timecode::Timecode(uint_fast32_t frameInput, double frameRate, bool b)
-    : _frameRate(frameRate), _dropFrame(b), _separator(_setSeparator()) {
+    : _hours(0), _minutes(0), _seconds(0), _frames(0), _frameRate(frameRate),
+      _dropFrame(b), _separator(':') {
   _setTimecode(frameInput);
+  _setSeparator();
 }
 
-Timecode::Timecode(const char *s, double f, bool b)
-    : _frameRate(f), _dropFrame(b), _separator(_setSeparator()) {
-  _setTimecode(s);
+Timecode::Timecode(const char *c, double f, bool b)
+    : _hours(0), _minutes(0), _seconds(0), _frames(0), _frameRate(f),
+      _dropFrame(b), _separator(':') {
+  _setTimecode(c);
+  _setSeparator();
   _validate();
 }
 
 Timecode::Timecode(std::string s, double f, bool b)
-    : _frameRate(f), _dropFrame(b), _separator(_setSeparator()) {
+    : _hours(0), _minutes(0), _seconds(0), _frames(0), _frameRate(f),
+      _dropFrame(b), _separator(':') {
   _setTimecode(s.c_str());
+  _setSeparator();
 }
 
 // Private member functions
-char Timecode::_setSeparator() {
-  _separator = (_dropFrame ? ';' : ':');
-  return _separator;
-}
+void Timecode::_setSeparator() { _separator = (_dropFrame ? ';' : ':'); }
 
 void Timecode::_setTimecode(uint_fast32_t &frameInput) {
   uint_fast16_t nominal_fps = _nominalFramerate();
-  uint_fast32_t frameLimit = _maxFrames();
+  uint_fast32_t frameLimit = maxFrames();
   uint_fast16_t framesPerMin = 60 * nominal_fps;
   uint_fast16_t framesPer10Min = framesPerMin * 10;
   uint_fast32_t framesPerHour = framesPer10Min * 6;
@@ -85,9 +89,12 @@ void Timecode::_setTimecode(uint_fast32_t &frameInput) {
   _frames = frameInput;
 }
 
-void Timecode::_setTimecode(const char *s) {
-  sscanf(s, "%2hu%*1c%2hu%*1c%2hu%*1c%2hu", &_hours, &_minutes, &_seconds,
-         &_frames);
+void Timecode::_setTimecode(const char *c) {
+
+  if (sscanf(c, "%2hu%*1c%2hu%*1c%2hu%*1c%2hu", &_hours, &_minutes, &_seconds, &_frames) != 4) {
+    _hours = _minutes = _seconds = _frames = 0;
+    throw(std::invalid_argument("Invalid string passed."));
+  }
 }
 
 uint_fast16_t Timecode::_nominalFramerate() const {
@@ -100,7 +107,7 @@ uint_fast16_t Timecode::_nominalFramerate() const {
   return nominal_fps;
 }
 
-uint_fast32_t Timecode::_maxFrames() const {
+uint_fast32_t Timecode::maxFrames() const {
   // 1 less than frameRate times 60 seconds, 60 minutes, 24 hours
   return _nominalFramerate() * 60 * 60 * 24 - 1;
 }
@@ -108,24 +115,24 @@ uint_fast32_t Timecode::_maxFrames() const {
 void Timecode::_validate() {
   if (_hours > 23) {
     throw std::invalid_argument("Hours cannot be larger than 23 (" +
-                                to_string() + ")");
+                                to_string() + " passed)");
   }
   if (_minutes > 59) {
     throw std::invalid_argument("Minutes cannot be larger than 59 (" +
-                                to_string() + ")");
+                                to_string() + " passed)");
   }
   if (_seconds > 59) {
     throw std::invalid_argument("Seconds cannot be larger than 59 (" +
-                                to_string() + ")");
+                                to_string() + " passed)");
   }
   if (_frames > _frameRate) {
     throw std::invalid_argument("Frames cannot be larger than framerate (" +
-                                to_string() + ", " +
-                                std::to_string(_frameRate) + ")");
+                            to_string() + ", " + std::to_string(_frameRate) +
+                            " passed)");
   }
   if (_dropFrame && _frames == 0 && _seconds == 0 && _minutes % 10 != 0) {
     throw std::invalid_argument("Frames dropped in dropframe passed (" +
-                                to_string() + ")");
+                                to_string() + " passed)");
   }
 };
 
@@ -182,13 +189,13 @@ void Timecode::dropframe(const bool &b) { _dropFrame = b; }
 
 Timecode::operator int() const { return totalFrames(); }
 
-Timecode::operator char *() const { return c_str(); }
+Timecode::operator const char *() const { return c_str(); }
 
 Timecode::operator std::string() const { return to_string(); }
 
 std::string Timecode::to_string() const { return std::string(c_str()); }
 
-char *Timecode::c_str() const {
+const char *Timecode::c_str() const {
   static char s[12];
   sprintf(s, "%02u%c%02u%c%02u%c%02u", _hours, _separator, _minutes, _separator,
           _seconds, _separator, _frames);
@@ -198,7 +205,7 @@ char *Timecode::c_str() const {
 // Operators
 Timecode Timecode::operator+(const Timecode &t) const {
   uint_fast32_t frameSum = totalFrames() + t.totalFrames();
-  frameSum %= _maxFrames();
+  frameSum %= maxFrames();
   return Timecode(frameSum, _frameRate, _dropFrame);
 }
 
@@ -213,7 +220,7 @@ Timecode Timecode::operator-(const Timecode &t) const {
 Timecode Timecode::operator-(const int &i) const {
   int_fast32_t f = totalFrames() - i;
   if (f < 0)
-    f += _maxFrames();
+    f += maxFrames();
   return Timecode(f, _frameRate, _dropFrame);
 }
 

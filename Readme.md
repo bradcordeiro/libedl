@@ -95,7 +95,7 @@ For reference, an event in a CMX 3600 EDL looks like the following block. Descri
 ````
 888  EVL1_HEI V     C        00:08:00:19 00:08:02:16 01:21:11:21 01:21:13:18
 * POND5_T_QEVL1HEIS1040_HEISTS_DINNER SET GANG_CLOSEUP OF FULL TREASURE CHEST WITH
-*  JEWELLERY_59691306 
+*  JEWELLERY_59691306
 * FROM CLIP NAME:  T_QEVL1HEIS1040.NEW.01.COPY.01
 ````
 
@@ -122,8 +122,8 @@ Each constructor provides a default framerate and dropframe boolean. These are 3
 
 * **void dropFrame(bool)** : Sets dropframe-ness
 * **void eventNumber(int)** : Sets event number (not that this can be different from the event's index in an EDL)
-* **void reel(std::string)** : Sets the Event's reel 
-* **void trackType(char)** : Sets the Event's track type (typicaly 'V' for video or 'A' for audio) 
+* **void reel(std::string)** : Sets the Event's reel
+* **void trackType(char)** : Sets the Event's track type (typicaly 'V' for video or 'A' for audio)
 * **void comment(std::string, bool)** : Sets the Event's comment. Because comments can span multiple lines, you may also pass a boolean on wether you want the comment to be appended. This defaults to false, which overwrites any existing comment.
 * **void sourceFileName(std::string)** : Sets the Event source's file name.
 * **void sourceClipName(std::string)** : Sets the Event source's clip name.
@@ -151,17 +151,17 @@ The available signatures for each are:
 
 ### Timecode Class
 
-The Timecode class supports any framerate, including 29.97 and 59.94 in both dropframe and non-dropframe. 
+The Timecode class supports any framerate, including 29.97 and 59.94 in both dropframe and non-dropframe.
 
 #### Timecode Constructors
 
 Framerate and dropframe arguments in constructors are optional, and will default to *30* for framerate and *false* for dropframe-ness.
 
-Constructors will throw an *out_of_range* exception under the following conditions:
+Constructors will throw an *invalid_argument* exception under the following conditions:
 
 * hours exceed 24
-* minutes exceed 60
-* seconds exceed 60
+* minutes exceed 59
+* seconds exceed 59
 * frames exceed the framerate
 * Total frames exceed the number of frames in 24 hours
 

@@ -43,12 +43,12 @@ void Event::_setEventClipData(const std::string &s) {
 
 void Event::_parseEvent(const std::string &line) {
   uint_fast16_t eventNumberRead;
-  char *reelRead = new char[9];
+  char reelRead[9];
   char trackTypeRead;
-  char *sstart = new char[12];
-  char *send = new char[12];
-  char *rstart = new char[12];
-  char *rend = new char[12];
+  char sstart[12];
+  char send[12];
+  char rstart[12];
+  char rend[12];
 
   if (sscanf(line.c_str(), "%3hu %s %c %*s %*s %s %s %s %s", &eventNumberRead,
              reelRead, &trackTypeRead, sstart, send, rstart, rend) == 7) {
@@ -76,12 +76,6 @@ void Event::_parseEvent(const std::string &line) {
   } else {
     throw std::invalid_argument("Invalid event string");
   }
-
-  delete[] reelRead;
-  delete[] sstart;
-  delete[] send;
-  delete[] rstart;
-  delete[] rend;
 }
 
 void Event::comment(const std::string &s, bool append) {

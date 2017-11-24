@@ -14,22 +14,19 @@ private:
   bool _dropFrame;
   char _separator;
 
-  char _setSeparator();
+  void _setSeparator();
   void _setTimecode(uint_fast32_t &);
   void _setTimecode(const char *);
   uint_fast16_t _nominalFramerate() const;
-  uint_fast32_t _maxFrames() const;
-  inline char separator() const { return _separator; }
-  inline void separator(char c) { _separator = c; }
   void _validate();
 
 public:
   // constructors
-  explicit Timecode(uint_fast16_t = 0, uint_fast16_t = 0, uint_fast16_t = 0,
-                    uint_fast16_t = 0, double = 30, bool b = false);
-  explicit Timecode(uint_fast32_t, double = 30.0, bool = false);
-  explicit Timecode(const char *, double = 30.0, bool = false);
-  explicit Timecode(std::string, double = 30.0, bool = false);
+  Timecode(uint_fast16_t = 0, uint_fast16_t = 0, uint_fast16_t = 0,
+           uint_fast16_t = 0, double = 30, bool b = false);
+  Timecode(uint_fast32_t, double = 30.0, bool = false);
+  Timecode(const char *, double = 30.0, bool = false);
+  Timecode(std::string, double = 30.0, bool = false);
 
   // getters
   uint_fast16_t hours() const;
@@ -38,6 +35,7 @@ public:
   uint_fast16_t frames() const;
   double framerate() const;
   bool dropframe() const;
+  uint_fast32_t maxFrames() const;
   uint_fast32_t totalFrames() const;
   // setters
   void hours(const uint_fast16_t &);
@@ -49,9 +47,9 @@ public:
 
   // type conversion
   operator int() const;
-  operator char *() const;
+  operator const char *() const;
   operator std::string() const;
-  char *c_str() const;
+  const char *c_str() const;
   std::string to_string() const;
 
   // operators
