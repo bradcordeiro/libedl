@@ -20,8 +20,7 @@ Event::Event(const std::string &line, const double &f, const bool &b)
 }
 
 Event::~Event() {
-  delete _motionEffect;
-  _motionEffect = 0;
+  removeMotionEffect();
 }
 
 std::string Event::motionEffectReel() const {
@@ -111,6 +110,11 @@ void Event::motionEffect(const std::string s) {
 
 void Event::motionEffect(const MotionEffect &m) {
   _motionEffect = new MotionEffect(m);
+}
+
+void Event::removeMotionEffect() {
+  delete _motionEffect;
+  _motionEffect = 0;
 }
 
 std::ostream &operator<<(std::ostream &out, const Event &e) {
