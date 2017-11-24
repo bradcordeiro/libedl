@@ -26,7 +26,7 @@ private:
   std::string _sourceClipName;
   std::string _sourceFileName;
   std::string _comment;
-  MotionEffect _motionEffect;
+  MotionEffect* _motionEffect;
   void _setEventClipData(const std::string &s);
   void _parseEvent(const std::string &);
 
@@ -46,11 +46,11 @@ public:
   inline Timecode sourceEnd() const { return _sourceEnd; }
   inline Timecode recordStart() const { return _recordStart; }
   inline Timecode recordEnd() const { return _recordEnd; }
-  inline MotionEffect motionEffect() const { return _motionEffect; }
+  inline MotionEffect motionEffect() const { return *_motionEffect; }
   std::string motionEffectReel() const;
   double motionEffectSpeed() const;
   Timecode motionEffectEntryPoint() const;
-  inline bool hasMotionEffect() const { return _motionEffect.speed() != 0; }
+  inline bool hasMotionEffect() const { return _motionEffect != 0; }
   // setters
   void dropFrame(const bool &b) { _df = b; }
   void eventNumber(const int_fast16_t &i) { _eventNumber = i; };

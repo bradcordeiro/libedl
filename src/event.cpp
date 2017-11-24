@@ -9,26 +9,26 @@ Event::Event()
     : _eventNumber(0), _trackType('V'), _trackNumber(1), _fps(30.0), _df(false),
       _sourceStart(Timecode()), _sourceEnd(Timecode()),
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),
-      _sourceFileName(""), _comment(""), _motionEffect(MotionEffect()) {}
+      _sourceFileName(""), _comment(""), _motionEffect(0) {}
 
 Event::Event(const std::string &line, const double &f, const bool &b)
     : _eventNumber(0), _trackType('V'), _trackNumber(1), _fps(f), _df(b),
       _sourceStart(Timecode()), _sourceEnd(Timecode()),
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),
-      _sourceFileName(""), _comment(""), _motionEffect(MotionEffect()) {
+      _sourceFileName(""), _comment(""), _motionEffect(0) {
   _parseEvent(line);
 }
 
 std::string Event::motionEffectReel() const {
-  return hasMotionEffect() ? _motionEffect.reel() : reel();
+  return hasMotionEffect() ? _motionEffect->reel() : reel();
 }
 
 double Event::motionEffectSpeed() const {
-  return hasMotionEffect() ? _motionEffect.speed() : _fps;
+  return hasMotionEffect() ? _motionEffect->speed() : _fps;
 }
 
 Timecode Event::motionEffectEntryPoint() const {
-  return hasMotionEffect() ? _motionEffect.entryPoint() : sourceStart();
+  return hasMotionEffect() ? _motionEffect->entryPoint() : sourceStart();
 }
 
 void Event::_setEventClipData(const std::string &s) {
@@ -87,10 +87,12 @@ void Event::comment(const std::string &s, bool append) {
 }
 
 void Event::motionEffect(const std::string s) {
-  _motionEffect = MotionEffect(s);
+  _motionEffect = new MotionEffect(s);
 }
 
-void Event::motionEffect(const MotionEffect &m) { _motionEffect = m; }
+void Event::motionEffect(const MotionEffect &m) {
+  _motionEffect = new MotionEffect(m);
+}
 
 std::ostream &operator<<(std::ostream &out, const Event &e) {
   out << std::setw(3) << std::setfill('0') << e._eventNumber << "  "
