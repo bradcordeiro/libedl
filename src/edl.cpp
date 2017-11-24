@@ -43,6 +43,8 @@ Edl::Edl(std::ifstream &inputFile) : _frameRate(30), _dropFrame(false) {
   _events.shrink_to_fit();
 }
 
+Edl::~Edl() {}
+
 void Edl::_nameFromHeader(std::string input) { name(input.substr(9)); }
 
 void Edl::_setFrameRate(const std::string &input) {

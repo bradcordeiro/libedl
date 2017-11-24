@@ -33,6 +33,7 @@ private:
 public:
   // constructors
   Event();
+  Event(const Event &);
   explicit Event(const std::string &, const double & = 30.0,
                  const bool & = false);
   ~Event();
@@ -71,6 +72,7 @@ public:
   void sourceFileName(const std::string &s);
   void sourceClipName(const std::string &s);
   // operator overloads
+  Event &operator=(const Event &);
   friend std::ostream &operator<<(std::ostream &, const Event &);
   friend std::istream &operator>>(std::istream &, Event &);
 };

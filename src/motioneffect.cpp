@@ -4,6 +4,10 @@
 
 MotionEffect::MotionEffect() : _speed(0), _entryPoint(Timecode()) {}
 
+MotionEffect::MotionEffect(const MotionEffect &m) : _reel(m._reel), _speed(m._speed), _entryPoint(m._entryPoint) {
+
+}
+
 MotionEffect::MotionEffect(std::string s)
     : _reel(""), _speed(0), _entryPoint(Timecode()) {
   char reelRead[9];

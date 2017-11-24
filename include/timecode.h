@@ -24,6 +24,7 @@ public:
   // constructors
   Timecode(uint_fast16_t = 0, uint_fast16_t = 0, uint_fast16_t = 0,
            uint_fast16_t = 0, double = 30, bool b = false);
+  Timecode(Timecode &);
   Timecode(uint_fast32_t, double = 30.0, bool = false);
   Timecode(const char *, double = 30.0, bool = false);
   Timecode(std::string, double = 30.0, bool = false);

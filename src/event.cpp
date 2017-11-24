@@ -11,6 +11,17 @@ Event::Event()
       _recordStart(Timecode()), _recordEnd(Timecode()), _sourceClipName(""),
       _sourceFileName(""), _comment(""), _motionEffect(0) {}
 
+Event::Event(const Event &e)
+    : _eventNumber(e._eventNumber), _trackType(e._trackType),
+      _trackNumber(e._trackNumber), _fps(e._fps), _df(e._df),
+      _sourceStart(e._sourceStart), _sourceEnd(e._sourceEnd),
+      _recordStart(e._recordStart), _recordEnd(e._recordEnd),
+      _sourceClipName(e._sourceClipName), _sourceFileName(e._sourceFileName),
+      _comment(e._comment), _motionEffect(0) {
+  if (e.hasMotionEffect())
+    _motionEffect = new MotionEffect(*e._motionEffect);
+}
+
 Event::Event(const std::string &line, const double &f, const bool &b)
     : _eventNumber(0), _trackType('V'), _trackNumber(1), _fps(f), _df(b),
       _sourceStart(Timecode()), _sourceEnd(Timecode()),
@@ -173,6 +184,28 @@ std::ostream &operator<<(std::ostream &out, const Event &e) {
   out << std::resetiosflags(std::ios_base::adjustfield);
 
   return out;
+}
+
+Event &Event::operator=(const Event &e) {
+  if (this != &e) {
+    removeMotionEffect();
+  }
+
+  _eventNumber = e._eventNumber;
+  _trackType = e._trackType;
+  _trackNumber = e._trackNumber;
+  _fps = e._fps;
+  _df = e._df;
+  _sourceStart = e._sourceStart;
+  _sourceEnd = e._sourceEnd;
+  _recordStart = e._recordStart;
+  _recordEnd = e._recordEnd;
+  _sourceClipName = e._sourceClipName;
+  _sourceFileName = e._sourceFileName;
+  _comment = e._comment;
+  _motionEffect = new MotionEffect(*e._motionEffect);
+
+  return *this;
 }
 
 std::istream &operator>>(std::istream &in, Event &e) {

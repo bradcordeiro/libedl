@@ -25,6 +25,8 @@ public:
   Edl();
   explicit Edl(std::ifstream &);
   Edl(Edl &);
+  // destructor
+  ~Edl();
   // getters
   std::string name() const;
   unsigned long size() const;
