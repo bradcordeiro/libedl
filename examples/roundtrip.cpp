@@ -1,5 +1,5 @@
 /*
-Reads an EDL file into C++ classes and then spits it back out to stdout
+Reads an EDL file into classes and then spits it back out to stdout
 */
 
 #include "../src/edl.hpp"
