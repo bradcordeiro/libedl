@@ -14,7 +14,7 @@ public:
   // constructors
   Event();
   Event(const Event &);
-  Event(int, std::string, char, Timecode, Timecode, Timecode, Timecode, float,
+  Event(int, std::string, char, int, Timecode, Timecode, Timecode, Timecode, float,
         bool);
   // destructor
   ~Event();

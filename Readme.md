@@ -70,7 +70,7 @@ An Edl class is mostly a container for Event objects. It also stores a title for
 
 * **std::string name()** : the EDL's title.
 * **int size()** : returns the number of events in the EDL
-* **Event* event(int)** : returns a pointer to the event with the passed event number. Note that an event's number may be different than its index in the underlying array. Returns nullptr if the event number does not exist in the EDL.
+* **Event\* event(int)** : returns a pointer to the event with the passed event number. Note that an event's number may be different than its index in the underlying array. Returns *nullptr* if the event number does not exist in the EDL.
 
 #### Edl Setters
 
@@ -101,16 +101,17 @@ M2   EVL1_HEI       037.5                00:08:00:19
 #### Event Constructors
 
 * **Event()** : Creates an empty event
-* **Event(int, std::string, char, Timecode, Timecode, Timecode, Timecode, float, bool)** : Creates an event from the following parameters:
-  * int: Event number.
-  * std::string: Reel.
-  * char: Track type.
-  * Timecode: Source start timecode.
-  * Timecode: Source end timecode.
-  * Timecode: Record start timecode.
-  * Timecode: Record end timecode.
-  * float: Frame rate.
-  * bool: drop-frame-ness.
+* **Event(int, std::string, char, int, Timecode, Timecode, Timecode, Timecode, float, bool)** : Creates an event from the following parameters:
+  * **int** : Event number.
+  * **std::string** : Reel.
+  * **char** : Track type.
+  * **int** : Track number.
+  * **Timecode** : Source start timecode.
+  * **Timecode** : Source end timecode.
+  * **Timecode** : Record start timecode.
+  * **Timecode** : Record end timecode.
+  * **float** : Frame rate.
+  * **bool** : drop-frame-ness.
 
 #### Event Getters
 

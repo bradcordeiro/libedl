@@ -28,11 +28,11 @@ Event::Event(const Event &e) {
     _motionEffect = new MotionEffect(*e._motionEffect);
 }
 
-Event::Event(int e, std::string r, char t, Timecode ss, Timecode se,
+Event::Event(int e, std::string r, char t, int i, Timecode ss, Timecode se,
              Timecode rs, Timecode re, float f, bool b)
-    : _eventNumber(e), _reel(r), _trackType(t), _sourceStart(ss),
-      _sourceEnd(se), _recordStart(rs), _recordEnd(re), _fps(f), _df(b),
-      _motionEffect(nullptr) {}
+    : _eventNumber(e), _reel(r), _trackType(t), _trackNumber(i),
+      _sourceStart(ss), _sourceEnd(se), _recordStart(rs), _recordEnd(re),
+      _fps(f), _df(b), _motionEffect(nullptr) {}
 
 Event::~Event() { delete _motionEffect; }
 
@@ -60,15 +60,24 @@ std::string Event::sourceFileName() const { return _sourceFileName; }
 std::string Event::comment() const { return _comment; }
 
 std::string Event::motionEffectReel() const {
-  return hasMotionEffect() ? _motionEffect->reel() : reel();
+  if (hasMotionEffect())
+    return _motionEffect->reel();
+
+  throw std::runtime_error("No motion effect on event.");
 }
 
 double Event::motionEffectSpeed() const {
-  return hasMotionEffect() ? _motionEffect->speed() : _fps;
+  if (hasMotionEffect())
+    return _motionEffect->speed();
+
+  throw std::runtime_error("No motion effect on event.");
 }
 
 Timecode Event::motionEffectEntryPoint() const {
-  return hasMotionEffect() ? _motionEffect->entryPoint() : sourceStart();
+  if (hasMotionEffect())
+    return _motionEffect->entryPoint();
+
+  throw std::runtime_error("No motion effect on event.");
 }
 
 void Event::eventNumber(const int &i) { _eventNumber = i; };
