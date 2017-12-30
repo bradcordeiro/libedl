@@ -1,81 +1,18 @@
-#ifndef _TIMECODE_H_
-#define _TIMECODE_H_
-#include <cstdio>
-#include <iostream>
-#include <stdexcept>
-#include <string>
-
-class Timecode {
-private:
-  int _hours;
-  int _minutes;
-  int _seconds;
-  int _frames;
-  float _frameRate;
-  bool _dropFrame;
-
-  void _timecodeFromInt(int);
-  void _timecodeFromCStr(const char *);
-  int _nominalFramerate() const;
-  void _validate();
-  int _maxFrames() const;
-  char _separator() const;
-
-public:
-  // constructors
-  Timecode();
-  Timecode(int, int, int, int, double, bool);
-  Timecode(int, double, bool);
-  Timecode(const std::string &, double, bool);
-
-  // getters
-  int hours() const;
-  int minutes() const;
-  int seconds() const;
-  int frames() const;
-  float framerate() const;
-  bool dropframe() const;
-  int totalFrames() const;
-
-  // setters
-  void hours(const int &);
-  void minutes(const int &);
-  void seconds(const int &);
-  void frames(const int &);
-  void framerate(const float &);
-  void dropframe(const bool &);
-
-  // type conversion
-  operator int();
-  std::string to_string() const;
-
-  // operators
-  Timecode operator+(const Timecode &) const;
-  Timecode operator+(const int &i) const;
-  Timecode operator-(const Timecode &) const;
-  Timecode operator-(const int &i) const;
-  bool operator==(const Timecode &) const;
-  bool operator!=(const Timecode &) const;
-  bool operator<(const Timecode &) const;
-  bool operator<=(const Timecode &) const;
-  bool operator>(const Timecode &) const;
-  bool operator>=(const Timecode &) const;
-
-  friend std::ostream &operator<<(std::ostream &, const Timecode &);
-};
+#include "../include/timecode.h"
 
 // Constructors
 Timecode::Timecode()
     : _hours(0), _minutes(0), _seconds(0), _frames(0), _frameRate(30.0),
       _dropFrame(false) {}
 
-Timecode::Timecode(int h, int m, int s, int fr, double f, bool b)
+Timecode::Timecode(unsigned int h, unsigned int m, unsigned int s,
+                   unsigned int fr, double f, bool b)
     : _hours(h), _minutes(m), _seconds(s), _frames(fr), _frameRate(f),
       _dropFrame(b) {
   _validate();
 }
 
-Timecode::Timecode(int frameInput, double f, bool b)
+Timecode::Timecode(uint_fast32_t frameInput, double f, bool b)
     : _frameRate(f), _dropFrame(b) {
   int nominal_fps = _nominalFramerate();
   int dropCount = nominal_fps / 15;
@@ -121,18 +58,18 @@ Timecode::Timecode(int frameInput, double f, bool b)
   _frames = frameInput;
 }
 
-Timecode::Timecode(const std::string &s, double f, bool b)
+Timecode::Timecode(const std::string &s, const float &f, const bool &b)
     : _frameRate(f), _dropFrame(b) {
-  _timecodeFromCStr(s.c_str());
+  _setTimecode(s.c_str());
   _validate();
 }
 
 // Private member functions
 
-void Timecode::_timecodeFromCStr(const char *c) {
-  int h, m, s, f;
+void Timecode::_setTimecode(const char *c) {
+  uint_fast16_t h, m, s, f;
 
-  if (sscanf(c, "%2d%*1c%2d%*1c%2d%*1c%2d", &h, &m, &s, &f) == 4) {
+  if (sscanf(c, "%2hu%*1c%2hu%*1c%2hu%*1c%2hu", &h, &m, &s, &f) == 4) {
     _hours = h;
     _minutes = m;
     _seconds = s;
@@ -142,7 +79,7 @@ void Timecode::_timecodeFromCStr(const char *c) {
   }
 }
 
-int Timecode::_nominalFramerate() const {
+uint_fast16_t Timecode::_nominalFramerate() const {
   int nominal_fps = static_cast<int>(_frameRate);
 
   // nominal fps for 29.97 is 30, for 59.94 is 60, for 23.98 is 24
@@ -156,7 +93,7 @@ int Timecode::_nominalFramerate() const {
   }
 }
 
-int Timecode::_maxFrames() const {
+uint_fast32_t Timecode::_maxFrames() const {
   // 1 less than frameRate times 60 seconds, 60 minutes, 24 hours
   Timecode t(23, 59, 59, _nominalFramerate() - 1, _frameRate, _dropFrame);
 
@@ -184,23 +121,23 @@ void Timecode::_validate() {
   }
 };
 
-char Timecode::_separator() const { return _dropFrame ? ';' : ':'; }
-
 // Getters
 
-int Timecode::hours() const { return _hours; }
+unsigned int Timecode::hours() const { return _hours; }
 
-int Timecode::minutes() const { return _minutes; }
+unsigned int Timecode::minutes() const { return _minutes; }
 
-int Timecode::seconds() const { return _seconds; }
+unsigned int Timecode::seconds() const { return _seconds; }
+
+unsigned int Timecode::frames() const { return _frames; }
 
 float Timecode::framerate() const { return _frameRate; }
 
 bool Timecode::dropframe() const { return _dropFrame; }
 
-int Timecode::frames() const { return _frames; }
+char Timecode::_separator() const { return _dropFrame ? ';' : ':'; }
 
-int Timecode::totalFrames() const {
+uint_fast32_t Timecode::totalFrames() const {
   int nominal_fps = _nominalFramerate();
   int framesPerMin = 60 * nominal_fps;
   int framesPer10Min = framesPerMin * 10;
@@ -224,13 +161,13 @@ int Timecode::totalFrames() const {
 }
 
 // Setters
-void Timecode::hours(const int &h) { _hours = h; }
+void Timecode::hours(const unsigned int &h) { _hours = h; }
 
-void Timecode::minutes(const int &m) { _minutes = m; }
+void Timecode::minutes(const unsigned int &m) { _minutes = m; }
 
-void Timecode::seconds(const int &s) { _seconds = s; }
+void Timecode::seconds(const unsigned int &s) { _seconds = s; }
 
-void Timecode::frames(const int &f) { _frames = f; }
+void Timecode::frames(const unsigned int &f) { _frames = f; }
 
 void Timecode::framerate(const float &f) { _frameRate = f; }
 
@@ -246,7 +183,7 @@ std::string Timecode::to_string() const {
   return s;
 }
 
-Timecode::operator int() { return totalFrames(); }
+Timecode::operator int() const { return totalFrames(); }
 
 // Operators
 Timecode Timecode::operator+(const Timecode &t) const {
@@ -264,8 +201,15 @@ Timecode Timecode::operator-(const Timecode &t) const {
 }
 
 Timecode Timecode::operator-(const int &i) const {
-  int f = totalFrames() - i;
+  int_fast32_t f = totalFrames() - i;
   if (f < 0)
+    f += _maxFrames();
+  return Timecode(f, _frameRate, _dropFrame);
+}
+
+Timecode Timecode::operator*(const int &i) const {
+  int_fast32_t f = totalFrames() * i;
+  while (f < 0)
     f += _maxFrames();
   return Timecode(f, _frameRate, _dropFrame);
 }
@@ -296,5 +240,3 @@ std::ostream &operator<<(std::ostream &out, const Timecode &t) {
   out << t.to_string();
   return out;
 }
-
-#endif //_TIMECODE_H_

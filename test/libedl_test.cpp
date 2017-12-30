@@ -1,7 +1,7 @@
-#include "../src/edl.hpp"
-#include "../src/event.hpp"
-#include "../src/motioneffect.hpp"
-#include "../src/timecode.hpp"
+#include "../include/edl.h"
+#include "../include/event.h"
+#include "../include/motioneffect.h"
+#include "../include/timecode.h"
 #include "gtest.h"
 #include <fstream>
 #include <string>
@@ -261,7 +261,12 @@ TEST(TimecodeTest, Operator_Plus) {
   ASSERT_EQ(b.totalFrames(), c.totalFrames());
 }
 
-// TEST(TimecodeTest, FramesOver24HoursRollsOver)
+TEST(TimecodeTest, Operator_Multiply) {
+  Timecode t("01:00:00:00", 30, false);
+  Timecode u("02:00:00:00", 30, false);
+  Timecode v = t*2;
+  ASSERT_EQ(u,v);
+}
 
 TEST(TimecodeTest, InvalidTimecodes_RollOver) {
   // ASSERT_THROW(Timecode(5184000, 59.94, false), std::invalid_argument);

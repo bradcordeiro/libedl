@@ -1,3 +1,5 @@
+.DS_Store
+
 test/gtest-all.o
 test/gtest.h
 test/*.edl
@@ -8,3 +10,4 @@ build
 
 CMakeLists.txt
 cmake-build-debug
+Makefile
