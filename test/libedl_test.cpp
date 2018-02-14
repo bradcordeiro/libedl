@@ -140,6 +140,13 @@ TEST(EventTest, Operator_Assignment) {
   ASSERT_NE(&x, &y);
 }
 
+TEST(EventTest, Exception_nonexistent_motion_effect) {
+  Event e;
+  ASSERT_THROW(e.motionEffectReel(), Event::nonexistent_motion_effect);
+  ASSERT_THROW(e.motionEffectSpeed(), Event::nonexistent_motion_effect);
+  ASSERT_THROW(e.motionEffectEntryPoint(), Event::nonexistent_motion_effect);
+}
+
 // Motion Effects
 TEST(MotionEffectTest, hasMotionEffect) {
   float f = 30.0;
@@ -220,6 +227,14 @@ TEST(TimecodeTest, Function_to_string) {
   ASSERT_EQ("15:08:41;04", u.to_string());
 }
 
+// Cast to int
+TEST(TimecodeTest, Operator_Int) {
+  const int f = 1633998;
+  Timecode t(f, 29.97, false);
+  int i(f);
+  ASSERT_EQ(f, i);
+}
+
 TEST(TimecodeTest, Operator_Relational) {
   Timecode t("15:08:41;04", 29.97, false);
   Timecode u("15:08:41;04", 29.97, false);
@@ -281,6 +296,12 @@ TEST(TimecodeTest, InvalidTimecodes_RollOver) {
             Timecode("01:00:01:01", 30.0, false));
   ASSERT_EQ(Timecode("01:05:00:00", 29.97, true),
             Timecode("01:05:00:02", 29.97, true));
+}
+
+TEST(TimecodeTest, Static_Function_FramesToString) {
+  std::string t = "15:08:41;04";
+  std::string u = Timecode::framesToString(1633998, 29.97, true);
+  ASSERT_EQ(t, u);
 }
 
 int main(int argc, char **argv) {
