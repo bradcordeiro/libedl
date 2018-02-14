@@ -124,10 +124,10 @@ M2   EVL1_HEI       037.5                00:08:00:19
 * **Timecode recordStart()** : Returns Timecode object of the event's record start timecode ("01:21:11:21" above)
 * **Timecode recordEnd()** : Returns Timecode object of the event's record end timecode ("01:21:13:18" above)
 * **bool hasMotionEffect()** : Returns a boolean on wether the event has a motion effect on it.
-* **MotionEffect motionEffect()** : Returns a MotionEffect object for the event. If the event does not have a motion effect, throws *std::runtime_error*.
-* **std::string motionEffectReel()** : Returns the reel of the motion effected clip (EVL1_HEI In the block above). If the event does not have a motion effect, throws *std::runtime_error*.
-* **float motionEffectSpeed()** : Returns the speed at which a motion-effected clip is to be played. This is a float representing a frame-rate (037.05 in the block above). If the event does not have a motion effect, throws *std::runtime_error*.
-* **Timecode motionEffectEntryPoint()** : Returns a timecode object representing the motion-effected-clip's entry point; that is, the start timecode of the source clip to be sped or slowed (00:08:00:19 in the block above). If the event does not have a motion effect, throws *std::runtime_error*.
+* **MotionEffect motionEffect()** : Returns a MotionEffect object for the event. If the event does not have a motion effect, throws a *nonexistent_motion_effect* exception.
+* **std::string motionEffectReel()** : Returns the reel of the motion effected clip (EVL1_HEI In the block above). If the event does not have a motion effect, throws a *nonexistent_motion_effect* exception.
+* **float motionEffectSpeed()** : Returns the speed at which a motion-effected clip is to be played. This is a float representing a frame-rate (037.05 in the block above). If the event does not have a motion effect, throws a *nonexistent_motion_effect* exception.
+* **Timecode motionEffectEntryPoint()** : Returns a timecode object representing the motion-effected-clip's entry point; that is, the start timecode of the source clip to be sped or slowed (00:08:00:19 in the block above). If the event does not have a motion effect, throws a *nonexistent_motion_effect* exception.
 * **std::string sourceReel()** : Some EDL files store an 8-character reel for backwards compatibility, and a full reel name in a comment line. This function returns the full reel name (T_QEVL1HEIS1040 in the block above)
 * **std::string sourceClipName()** : Returns the event source name (T_QEVL1HEIS1040.NEW.01.COPY.01 in the block above)
 * **std::string sourceFileName()** : Returns the event's source file name (T_QEVL1HEIS1040.MOV in the block above)
@@ -194,6 +194,12 @@ The available constructors are:
 * **Timecode(int, int, int, int, double, bool)** : Create Timecode using integers for the hours, minutes, seconds, and frames. A double for the frame rate and boolean for drop-frame-ness are optional, and default to *30* and *false*, respectively.
 * **Timecode(int, double, bool)** : Create a Timecode object by passing an integer frame count. A double for frame rate and boolean for drop-frame-ness are optional, and default to *30* and *false*, respectively.
 * **Timecode(std::string, double, bool)** : Create a timecode from a string object, formatted as "00:00:00:00". A double for the frame rate and boolean for drop-frame-ness are optional, and default to *30* and *false*, respectively.
+
+### Static Helper Functions
+
+If you just want to get a timecode string (formatted as "00:00:00:00") from a count of frames, you don't have to create a Timecode object. You can use the following static member function:
+
+* **std::string framesToString(unsigned int, double, bool)** : Returns a string representing a given timecode, using an unsigned integer frame count, double frame rate, and boolean for drop-frame-ness.
 
 ### Timecode Getters
 
