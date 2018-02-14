@@ -10,6 +10,7 @@ Edl::Edl(std::ifstream &inputFile) {
 
   getline(inputFile, line);
   while (!inputFile.eof()) {
+    // uses multiple ifs since multipe conditions can be satisfied in sequences
     if (line.front() == 'T') {
       _nameFromHeader(line);
       getline(inputFile, line);

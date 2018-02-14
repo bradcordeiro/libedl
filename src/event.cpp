@@ -89,13 +89,11 @@ void Event::comment(const std::string &s, bool append) {
 }
 
 void Event::motionEffect(MotionEffect m) {
-  delete _motionEffect;
-  _motionEffect = nullptr;
+  removeMotionEffect();
   _motionEffect = new MotionEffect(m);
 }
 void Event::motionEffect(std::string s, float f, Timecode t) {
-  delete _motionEffect;
-  _motionEffect = nullptr;
+  removeMotionEffect();
   _motionEffect = new MotionEffect(s, f, t);
 }
 void Event::removeMotionEffect() {
@@ -125,8 +123,7 @@ Event Event::operator=(const Event &e) {
   _sourceFileName = e._sourceFileName;
   _comment = e._comment;
 
-  delete _motionEffect;
-  _motionEffect = nullptr;
+  removeMotionEffect();
   if (e.hasMotionEffect())
     _motionEffect = new MotionEffect(*e._motionEffect);
 
