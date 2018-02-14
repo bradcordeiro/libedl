@@ -13,6 +13,9 @@ public:
   Timecode(uint_fast32_t, double = 30.0, bool = false);
   Timecode(const std::string &, const float & = 30.0, const bool & = false);
 
+  // static member functions
+  static std::string framesToString(uint_fast32_t, double, bool);
+
   // getters
   unsigned int hours() const;
   unsigned int minutes() const;

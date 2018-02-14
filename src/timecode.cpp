@@ -64,6 +64,13 @@ Timecode::Timecode(const std::string &s, const float &f, const bool &b)
   _validate();
 }
 
+// Static member functions
+  static std::string framesToString(uint_fast32_t frames, double framerate, bool dropframe) {
+    Timecode tc(frames, framerate, dropframe);
+    return tc.to_string();
+  }
+
+
 // Private member functions
 
 void Timecode::_setTimecode(const char *c) {
