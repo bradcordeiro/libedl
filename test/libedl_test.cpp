@@ -19,6 +19,7 @@ TEST(EdlTest, EdlSize) {
   std::ifstream inputFile;
   inputFile.open("test/cmx3600.edl");
   Edl e(inputFile);
+  inputFile.close();
   ASSERT_EQ(testsize, e.size());
 }
 
@@ -85,7 +86,7 @@ TEST(EventTest, Constructor_EDLString) {
   Timecode se("00:05:45:13", 30.0, false);
   Timecode rs("01:00:00:00", 30.0, false);
   Timecode re("01:00:02:00", 30.0, false);
-  Event e(6, "EVL1_HEI", 'V', Timecode("00:05:43:12", 30, false),
+  Event e(6, "EVL1_HEI", 'V', 1, Timecode("00:05:43:12", 30, false),
           Timecode("00:05:45:13", 30, false),
           Timecode("01:00:00:00", 30.0, false),
           Timecode("01:00:02:00", 30.0, false), 30.0, false);
@@ -100,7 +101,7 @@ TEST(EventTest, Constructor_EDLString) {
 }
 
 TEST(EventTest, Constructor_Copy) {
-  Event e(6, "EVL1_HEI", 'V', Timecode("00:05:43:12", 30.0, false),
+  Event e(6, "EVL1_HEI", 'V', 1, Timecode("00:05:43:12", 30.0, false),
           Timecode("00:05:45:13", 30.0, false),
           Timecode("01:00:00:00", 30.0, false),
           Timecode("01:00:02:00", 30.0, false), 30.0, false);
@@ -120,7 +121,7 @@ TEST(EventTest, Constructor_Copy) {
 }
 
 TEST(EventTest, Operator_Assignment) {
-  Event e(6, "EVL1_HEI", 'V', Timecode("00:05:43:12", 30.0, false),
+  Event e(6, "EVL1_HEI", 'V', 1, Timecode("00:05:43:12", 30.0, false),
           Timecode("00:05:45:13", 30.0, false),
           Timecode("01:00:00:00", 30.0, false),
           Timecode("01:00:02:00", 30.0, false), 30.0, false);
@@ -143,7 +144,7 @@ TEST(EventTest, Operator_Assignment) {
 TEST(MotionEffectTest, hasMotionEffect) {
   float f = 30.0;
   bool d = false;
-  Event e(6, "EVL1_HEI", 'V', Timecode("00:05:43:12", f, d),
+  Event e(6, "EVL1_HEI", 'V', 1, Timecode("00:05:43:12", f, d),
           Timecode("00:05:45:13", f, d), Timecode("01:00:00:00", f, d),
           Timecode("01:00:02:00", f, d), f, d);
   ASSERT_FALSE(e.hasMotionEffect());

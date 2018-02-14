@@ -62,7 +62,7 @@ Event Edl::_parseEvent(const std::string &line, const float &f, const bool &b) {
     Timecode rs(rstart, f, b);
     Timecode re(rend, f, b);
     std::string r(rr);
-    return Event(enr, r, ttr, ss, se, rs, re, f, b);
+    return Event(enr, r, ttr, tnr, ss, se, rs, re, f, b);
   } else if (sscanf(line.c_str(), "%d %s %c %*c %s %s %s %s", &enr, rr, &ttr,
                     start, end, rstart, rend) == 7) {
     // 008  EVL1_HEI V     C        00:02:46:15 00:02:47:02 01:00:01:05
@@ -72,7 +72,7 @@ Event Edl::_parseEvent(const std::string &line, const float &f, const bool &b) {
     Timecode rs(rstart, f, b);
     Timecode re(rend, f, b);
     std::string r(rr);
-    return Event(enr, r, ttr, ss, se, rs, re, f, b);
+    return Event(enr, r, ttr, tnr, ss, se, rs, re, f, b);
   } else if (sscanf(line.c_str(), "%d %s %c%d %*c %s %s %s %s", &enr, rr, &ttr,
                     &tnr, start, end, rstart, rend) == 8) {
     // 0064 EP_107 A34    C        01:02:02:08 01:02:02:16 01:03:42:02
@@ -82,7 +82,7 @@ Event Edl::_parseEvent(const std::string &line, const float &f, const bool &b) {
     Timecode rs(rstart, f, b);
     Timecode re(rend, f, b);
     std::string r(rr);
-    return Event(enr, r, ttr, ss, se, rs, re, f, b);
+    return Event(enr, r, ttr, tnr, ss, se, rs, re, f, b);
   } else {
     throw std::invalid_argument("Invalid event string");
   }
