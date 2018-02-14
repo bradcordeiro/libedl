@@ -65,11 +65,11 @@ Timecode::Timecode(const std::string &s, const float &f, const bool &b)
 }
 
 // Static member functions
-  static std::string framesToString(uint_fast32_t frames, double framerate, bool dropframe) {
-    Timecode tc(frames, framerate, dropframe);
-    return tc.to_string();
-  }
-
+std::string Timecode::framesToString(uint_fast32_t frames, double framerate,
+                                     bool dropframe) {
+  Timecode tc(frames, framerate, dropframe);
+  return tc.to_string();
+}
 
 // Private member functions
 
@@ -131,17 +131,11 @@ void Timecode::_validate() {
 // Getters
 
 unsigned int Timecode::hours() const { return _hours; }
-
 unsigned int Timecode::minutes() const { return _minutes; }
-
 unsigned int Timecode::seconds() const { return _seconds; }
-
 unsigned int Timecode::frames() const { return _frames; }
-
 float Timecode::framerate() const { return _frameRate; }
-
 bool Timecode::dropframe() const { return _dropFrame; }
-
 char Timecode::_separator() const { return _dropFrame ? ';' : ':'; }
 
 uint_fast32_t Timecode::totalFrames() const {
@@ -169,15 +163,10 @@ uint_fast32_t Timecode::totalFrames() const {
 
 // Setters
 void Timecode::hours(const unsigned int &h) { _hours = h; }
-
 void Timecode::minutes(const unsigned int &m) { _minutes = m; }
-
 void Timecode::seconds(const unsigned int &s) { _seconds = s; }
-
 void Timecode::frames(const unsigned int &f) { _frames = f; }
-
 void Timecode::framerate(const float &f) { _frameRate = f; }
-
 void Timecode::dropframe(const bool &b) { _dropFrame = b; }
 
 // Type conversion
