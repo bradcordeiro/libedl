@@ -7,23 +7,14 @@ Event::Event()
       _sourceReel(""), _sourceClipName(""), _sourceFileName(""), _comment(""),
       _motionEffect(nullptr) {}
 
-Event::Event(const Event &e) {
-  _eventNumber = e._eventNumber;
-  _reel = e._reel;
-  _trackType = e._trackType;
-  _trackNumber = e._trackNumber;
-  _sourceStart = e._sourceStart;
-  _sourceEnd = e._sourceEnd;
-  _recordStart = e._recordStart;
-  _recordEnd = e._recordEnd;
-  _fps = e._fps;
-  _df = e._df;
-  _sourceReel = e._sourceReel;
-  _sourceClipName = e._sourceClipName;
-  _sourceFileName = e._sourceFileName;
-  _comment = e._comment;
-
-  _motionEffect = nullptr;
+Event::Event(const Event &e)
+    : _eventNumber(e._eventNumber), _reel(e._reel), _trackType(e._trackType),
+      _trackNumber(e._trackNumber), _sourceStart(e._sourceStart),
+      _sourceEnd(e._sourceEnd), _recordStart(e._recordStart),
+      _recordEnd(e._recordEnd), _fps(e._fps), _df(e._df),
+      _sourceReel(e._sourceReel), _sourceClipName(e._sourceClipName),
+      _sourceFileName(e._sourceFileName), _comment(e._comment),
+      _motionEffect(nullptr) {
   if (e.hasMotionEffect())
     _motionEffect = new MotionEffect(*e._motionEffect);
 }
