@@ -14,8 +14,8 @@ public:
   // constructors
   Event();
   Event(const Event &);
-  Event(int, std::string, char, int, Timecode, Timecode, Timecode, Timecode, float,
-        bool);
+  Event(int, std::string, char, int, Timecode, Timecode, Timecode, Timecode,
+        float, bool);
   // destructor
   ~Event();
   // getters
@@ -57,6 +57,13 @@ public:
 
   // operators
   Event operator=(const Event &);
+
+  // exceptions
+  class nonexistent_motion_effect : public std::runtime_error {
+  public:
+    nonexistent_motion_effect(const char *message)
+        : std::runtime_error(message) {}
+  };
 
 private:
   int _eventNumber;

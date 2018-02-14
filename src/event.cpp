@@ -25,7 +25,7 @@ Event::Event(int e, std::string r, char t, int i, Timecode ss, Timecode se,
       _sourceStart(ss), _sourceEnd(se), _recordStart(rs), _recordEnd(re),
       _fps(f), _df(b), _motionEffect(nullptr) {}
 
-Event::~Event() { delete _motionEffect; }
+Event::~Event() { removeMotionEffect(); }
 
 int Event::eventNumber() const { return _eventNumber; }
 char Event::trackType() const { return _trackType; }
@@ -40,7 +40,7 @@ MotionEffect Event::motionEffect() const {
   if (hasMotionEffect()) {
     return *_motionEffect;
   } else {
-    throw std::runtime_error("No motion effect for this event.");
+    throw Event::nonexistent_motion_effect("No motion effect for this event.");
   }
 }
 
@@ -54,21 +54,21 @@ std::string Event::motionEffectReel() const {
   if (hasMotionEffect())
     return _motionEffect->reel();
 
-  throw std::runtime_error("No motion effect on event.");
+  throw Event::nonexistent_motion_effect("No motion effect on event.");
 }
 
 double Event::motionEffectSpeed() const {
   if (hasMotionEffect())
     return _motionEffect->speed();
 
-  throw std::runtime_error("No motion effect on event.");
+  throw Event::nonexistent_motion_effect("No motion effect on event.");
 }
 
 Timecode Event::motionEffectEntryPoint() const {
   if (hasMotionEffect())
     return _motionEffect->entryPoint();
 
-  throw std::runtime_error("No motion effect on event.");
+  throw Event::nonexistent_motion_effect("No motion effect on event.");
 }
 
 void Event::eventNumber(const int &i) { _eventNumber = i; };
